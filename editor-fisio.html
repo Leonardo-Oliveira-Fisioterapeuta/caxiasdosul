@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor — Landing Page · Fisioterapeuta · Leonardo Oliveira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:#f5f6f8;color:#1a1a2e;font-size:14px;line-height:1.5}
+:root{
+  --accent:#00c896;--accent-dim:rgba(0,200,150,.08);--accent-glow:rgba(0,200,150,.18);
+  --bg0:#f5f6f8;--bg1:#ffffff;--bg2:#f0f1f4;--bg3:#e6e8ec;
+  --border:#e0e2e8;--border-l:#d0d3da;
+  --text:#1a1a2e;--text2:#5a5e70;--text3:#8b8fa3;
+  --danger:#ef4444;--danger-bg:rgba(239,68,68,.08);
+  --radius:10px;
+}
+::selection{background:var(--accent);color:#fff}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#b0b3be}
+
+/* ── TOP BAR ── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:56px;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:1000;gap:12px;
+}
+.tb-brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.tb-logo{width:32px;height:32px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#000;font-family:'Sora',sans-serif}
+.tb-title{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;letter-spacing:-.01em}
+.tb-title span{color:var(--text3);font-weight:400}
+.tb-center{display:flex;align-items:center;gap:6px}
+.tb-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* save indicator */
+#saveInd{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);white-space:nowrap;transition:color .3s}
+#saveInd.saving{color:var(--accent)}
+#saveInd.saved{color:#16a34a}
+#saveDot{width:6px;height:6px;border-radius:50%;background:var(--border-l);transition:background .3s;flex-shrink:0}
+#saveInd.saving #saveDot{background:var(--accent);animation:pulse .7s infinite}
+#saveInd.saved #saveDot{background:#16a34a}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* buttons */
+.btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;white-space:nowrap;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn:hover{background:var(--bg3);border-color:var(--border-l)}
+.btn-accent{background:var(--accent);color:var(--accent-text,#fff);border-color:var(--accent);font-weight:700}
+.btn-accent:hover{opacity:.88;background:var(--accent);border-color:var(--accent)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn[disabled]{opacity:.3;pointer-events:none}
+@media(max-width:640px){#saveText{display:none}.tb-title{display:none}.btn{padding:6px 10px;font-size:11px}}
+
+/* ── LAYOUT: horizontal split ── */
+#layout{display:flex;height:100vh;padding-top:56px}
+
+/* ── SIDEBAR (icon rail + section list) ── */
+#sidebar{
+  width:220px;min-width:220px;
+  background:#fafbfc;border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;
+}
+.sb-head{padding:16px 16px 12px;border-bottom:1px solid var(--border)}
+.sb-head-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)}
+.sb-scroll{flex:1;overflow-y:auto;padding:8px 0}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 16px;margin:1px 6px;border-radius:8px;
+  font-size:13px;color:var(--text2);cursor:pointer;
+  transition:all .12s;user-select:none;
+}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{background:var(--accent-dim);color:var(--accent);font-weight:600}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-sep{height:1px;background:var(--border);margin:8px 16px}
+@media(max-width:900px){#sidebar{width:54px;min-width:54px}.nav-item span,.sb-head{display:none}.nav-item{justify-content:center;padding:12px 0;margin:1px 4px}.nav-sep{margin:6px 10px}}
+@media(max-width:640px){#sidebar{display:none}}
+
+/* ── EDITOR MAIN ── */
+#editor{flex:1;overflow-y:auto;padding:24px 28px 90px;min-width:0;background:var(--bg0)}
+
+/* ── SECTION BLOCKS ── */
+.sec-blk{
+  background:var(--bg1);border:1px solid var(--border);
+  border-radius:14px;padding:24px;margin-bottom:16px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+  transition:border-color .25s,box-shadow .25s;
+}
+.sec-blk:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim),0 1px 3px rgba(0,0,0,.04)}
+.sec-lbl{
+  font-family:'Sora',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:18px;
+  display:flex;align-items:center;gap:8px;
+}
+.sec-lbl::before{content:'';width:3px;height:14px;border-radius:2px;background:var(--accent);flex-shrink:0}
+
+/* ethics / info note */
+.info-note{
+  background:rgba(0,200,150,.06);border:1px solid rgba(0,200,150,.18);
+  border-radius:10px;padding:12px 14px;font-size:12px;color:var(--accent);line-height:1.6;margin-bottom:16px;
+}
+.info-note strong{font-weight:700}
+
+/* ── FIELDS ── */
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--text3);margin-bottom:5px;letter-spacing:.03em;text-transform:uppercase}
+.field input[type="text"],.field textarea,.field select{
+  font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--text);
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:10px 12px;width:100%;outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.field input[type="text"]:focus,.field textarea:focus,.field select:focus{
+  border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);
+}
+.field textarea{resize:vertical;min-height:80px;line-height:1.65}
+.field .hint{font-size:10px;color:var(--text3);margin-top:3px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:520px){.g2,.g3{grid-template-columns:1fr}}
+
+/* toggle */
+.tog-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.tog-wrap{position:relative;width:40px;height:22px;flex-shrink:0;cursor:pointer}
+.tog-wrap input{opacity:0;width:0;height:0;position:absolute}
+.tog-track{position:absolute;inset:0;background:var(--bg3);border-radius:22px;transition:background .2s}
+.tog-track::after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.tog-wrap input:checked+.tog-track{background:var(--accent)}
+.tog-wrap input:checked+.tog-track::after{transform:translateX(18px)}
+.tog-lbl{font-size:13px;color:var(--text2);cursor:pointer;user-select:none}
+
+/* item rows (approach / services) */
+.item-list{display:flex;flex-direction:column;gap:8px}
+.item-row{display:grid;grid-template-columns:42px 1fr 1fr auto;gap:8px;align-items:center}
+.item-icon{
+  font-family:'DM Sans',sans-serif;font-size:18px;text-align:center;
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:7px 4px;outline:none;width:100%;color:var(--text);
+  transition:border-color .15s;
+}
+.item-icon:focus{border-color:var(--accent)}
+.item-row input[type="text"]{
+  font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:9px 11px;outline:none;width:100%;transition:border-color .15s;
+}
+.item-row input[type="text"]:focus{border-color:var(--accent)}
+@media(max-width:560px){.item-row{grid-template-columns:42px 1fr auto}.item-row input:nth-child(3){display:none}}
+.btn-del{
+  width:32px;height:32px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;cursor:pointer;font-size:16px;line-height:1;color:var(--text3);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;
+}
+.btn-del:hover{background:var(--danger-bg);border-color:var(--danger);color:var(--danger)}
+.btn-add{
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;
+  color:var(--accent);background:var(--accent-dim);
+  border:1.5px dashed rgba(0,200,150,.3);border-radius:8px;
+  padding:9px 12px;cursor:pointer;width:100%;margin-top:8px;transition:all .15s;
+}
+.btn-add:hover{background:rgba(0,200,150,.18)}
+
+/* faq rows */
+.faq-list{display:flex;flex-direction:column;gap:10px}
+.faq-row{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.faq-row-top{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.faq-row input[type="text"],.faq-row textarea{
+  font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);
+  background:var(--bg1);border:1px solid var(--border);border-radius:8px;
+  padding:9px 11px;width:100%;outline:none;transition:border-color .15s;
+}
+.faq-row input[type="text"]:focus,.faq-row textarea:focus{border-color:var(--accent)}
+.faq-row textarea{resize:vertical;min-height:60px;line-height:1.55}
+
+/* color swatches */
+.color-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .2s;flex-shrink:0}
+.swatch:hover{transform:scale(1.12)}
+.swatch.active{border-color:#1a1a2e;transform:scale(1.08);box-shadow:0 0 12px var(--accent-glow)}
+.hex-inp{font-family:'DM Sans',sans-serif;font-size:12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;width:80px;outline:none;color:var(--text)}
+.hex-inp:focus{border-color:var(--accent)}
+input[type="color"].nat-clr{width:32px;height:32px;padding:1px;border:1px solid var(--border);border-radius:50%;cursor:pointer;background:none}
+
+/* image upload */
+.img-zone{
+  border:1.5px dashed var(--border-l);border-radius:10px;
+  padding:20px;text-align:center;cursor:pointer;
+  transition:all .2s;position:relative;background:var(--bg2);
+}
+.img-zone:hover{border-color:var(--accent);background:var(--accent-dim)}
+.img-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:24px;margin-bottom:6px;opacity:.5}
+.upload-hint{font-size:11px;color:var(--text3)}
+
+/* social rows */
+.soc-fields{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.soc-row{display:flex;align-items:center;gap:8px}
+.soc-badge{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.soc-badge svg{width:16px;height:16px;fill:#fff}
+.soc-row input[type="text"]{
+  flex:1;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:9px 12px;outline:none;transition:border-color .15s;
+}
+.soc-row input[type="text"]:focus{border-color:var(--accent)}
+
+/* hero style cards */
+.hero-style-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+@media(max-width:600px){.hero-style-grid{grid-template-columns:repeat(2,1fr)}}
+.hs-card{border:2px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.hs-card:hover{border-color:var(--border-l)}
+.hs-card.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+.hs-preview{height:48px;display:flex;align-items:center;justify-content:center}
+.hs-label{font-size:9.5px;font-weight:600;color:var(--text3);text-align:center;padding:5px 4px;background:var(--bg2);border-top:1px solid var(--border);line-height:1.3}
+
+/* ── PREVIEW MODAL ── */
+#pvModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:2500;align-items:center;justify-content:center;padding:0}
+#pvModal.open{display:flex}
+.pvm-inner{background:var(--bg1);border-radius:16px;width:min(96vw,1240px);height:min(92vh,880px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.18);border:1px solid var(--border)}
+.pvm-head{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.pvm-head-left{display:flex;align-items:center;gap:12px}
+.pvm-head-title{font-size:13px;font-weight:700;color:var(--text)}
+.pvm-dv-btns{display:flex;gap:3px;background:var(--bg3);border-radius:8px;padding:3px}
+.pvm-dv-btn{padding:5px 14px;background:none;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text3);transition:all .15s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.pvm-dv-btn.active{background:var(--accent);color:#fff}
+.pvm-close{width:32px;height:32px;background:var(--bg3);border:none;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;transition:background .15s}
+.pvm-close:hover{background:var(--border-l);color:var(--text)}
+.pvm-body{flex:1;overflow:auto;display:flex;justify-content:center;align-items:flex-start;background:var(--bg0);padding:20px}
+#pvFrame{border:none;background:#fff;border-radius:10px;box-shadow:0 4px 30px rgba(0,0,0,.1);display:block;width:100%;height:calc(92vh - 90px);transition:width .3s,border-radius .3s}
+@media(max-width:640px){.pvm-inner{width:100%;height:100%;border-radius:0}}
+
+/* ── TEMPLATE MODAL ── */
+#tplModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:3000;align-items:center;justify-content:center;padding:16px}
+#tplModal.open{display:flex}
+.tpl-inner{background:var(--bg1);border:1px solid var(--border);border-radius:18px;width:min(720px,96vw);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.12)}
+.tpl-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-shrink:0}
+.tpl-head-text h2{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:4px}
+.tpl-head-text p{font-size:12.5px;color:var(--text3);line-height:1.4}
+.tpl-close{width:32px;height:32px;background:var(--bg3);border:none;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0}
+.tpl-body{overflow-y:auto;padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:540px){.tpl-body{grid-template-columns:1fr}}
+.tpl-card{border:2px solid var(--border);border-radius:14px;padding:18px 20px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:8px}
+.tpl-card:hover{border-color:var(--accent);box-shadow:0 4px 24px var(--accent-dim);transform:translateY(-2px)}
+.tpl-card-top{display:flex;align-items:center;gap:10px}
+.tpl-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.tpl-name{font-size:14px;font-weight:700;color:var(--text)}
+.tpl-sub{font-size:12px;color:var(--text3);line-height:1.45}
+.tpl-tags{display:flex;flex-wrap:wrap;gap:5px}
+.tpl-tag{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--accent-dim);color:var(--accent)}
+.tpl-foot{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;flex-shrink:0}
+.tpl-warn{font-size:11px;color:var(--text3);flex:1;align-self:center}
+
+/* ── CROP MODAL ── */
+#cropModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:3500;align-items:center;justify-content:center}
+#cropModal.open{display:flex}
+.crop-inner{background:var(--bg1);border:1px solid var(--border);border-radius:16px;padding:22px;width:min(480px,94vw);display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.12)}
+.crop-title{font-size:15px;font-weight:700;color:var(--text)}
+.crop-canvas-wrap{position:relative;overflow:hidden;background:#000;border-radius:10px;touch-action:none;cursor:grab}
+.crop-canvas-wrap:active{cursor:grabbing}
+#cropCanvas{display:block;width:100%;height:auto}
+.crop-controls{display:flex;align-items:center;gap:10px}
+.crop-controls label{font-size:11px;color:var(--text3);white-space:nowrap}
+#cropZoom{flex:1;accent-color:var(--accent)}
+.crop-actions{display:flex;gap:8px;justify-content:flex-end}
+
+/* ── MOBILE NAV ── */
+#mobileNav{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:var(--bg1);border-top:1px solid var(--border);
+  padding:4px 0 6px;z-index:999;justify-content:space-around;
+}
+.mnav{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 6px;font-size:9px;color:var(--text3);font-weight:500;cursor:pointer;background:none;border:none;border-radius:6px;transition:color .15s;min-width:44px}
+.mnav svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}
+.mnav.active{color:var(--accent)}
+@media(max-width:640px){#mobileNav{display:flex}#editor{padding-bottom:80px}}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header id="topbar">
+  <div class="tb-brand">
+    <div class="tb-logo">F</div>
+    <span class="tb-title">Editor <span>· Landing Page Fisioterapia</span></span>
+  </div>
+  <div class="tb-right">
+    <div id="saveInd"><div id="saveDot"></div><span id="saveText">Pronto</span></div>
+    <button class="btn btn-sm" id="btnUndo" title="Desfazer (Ctrl+Z)">↩</button>
+    <button class="btn btn-sm" id="btnRedo" title="Refazer (Ctrl+Y)">↪</button>
+    <button class="btn btn-sm" id="btnImportJson" title="Importar backup JSON">📂 Importar</button>
+    <button class="btn btn-sm" id="btnExportJson" title="Exportar backup JSON">💾 Backup</button>
+    <button class="btn btn-sm" id="btnReset" title="Restaurar dados padrão" style="color:var(--danger)">🔄 Reset</button>
+    <button class="btn" id="btnTemplates">✦ Templates</button>
+    <button class="btn" id="btnPreview">👁 Preview</button>
+    <button class="btn btn-accent" id="btnExport">↓ Exportar HTML</button>
+    <input type="file" id="jsonFileInput" accept=".json" style="display:none">
+  </div>
+</header>
+
+<div id="layout">
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-head"><span class="sb-head-title">Seções</span></div>
+  <div class="sb-scroll">
+    <div class="nav-item active" data-sec="sec-brand" onclick="goTo('sec-brand')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m-7.07-2.93l2.83-2.83m8.48-8.48l2.83-2.83M2 12h4m12 0h4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83"/></svg>
+      <span>Identidade</span>
+    </div>
+    <div class="nav-item" data-sec="sec-hero" onclick="goTo('sec-hero')">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+      <span>Hero</span>
+    </div>
+    <div class="nav-item" data-sec="sec-specialties" onclick="goTo('sec-specialties')">
+      <svg viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+      <span>Especialidades</span>
+    </div>
+    <div class="nav-item" data-sec="sec-services" onclick="goTo('sec-services')">
+      <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+      <span>Atendimentos</span>
+    </div>
+    <div class="nav-item" data-sec="sec-about" onclick="goTo('sec-about')">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Sobre mim</span>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" data-sec="sec-faq" onclick="goTo('sec-faq')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+      <span>FAQ</span>
+    </div>
+    <div class="nav-item" data-sec="sec-cta" onclick="goTo('sec-cta')">
+      <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      <span>Agendamento</span>
+    </div>
+    <div class="nav-item" data-sec="sec-contact" onclick="goTo('sec-contact')">
+      <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span>Contato</span>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" data-sec="sec-colors" onclick="goTo('sec-colors')">
+      <svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+      <span>Aparência</span>
+    </div>
+    <div class="nav-item" data-sec="sec-seo" onclick="goTo('sec-seo')">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <span>SEO</span>
+    </div>
+  </div>
+</nav>
+
+<!-- EDITOR PANELS -->
+<main id="editor">
+
+  <!-- IDENTIDADE -->
+  <div class="sec-blk" id="sec-brand">
+    <div class="sec-lbl">Identidade Profissional</div>
+    <div class="field"><label>Logo / Marca</label>
+      <div class="img-zone">
+        <input type="file" accept="image/*" onchange="handleLogo(event)">
+        <img id="logoPreview" alt="logo" style="max-height:56px;max-width:100%;display:none;margin:0 auto 6px;border-radius:6px;object-fit:contain">
+        <div id="logoPh"><div class="upload-icon">📎</div><div class="upload-hint">Enviar logo (opcional)</div></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Nome completo</label>
+        <input type="text" id="f-brand" oninput="saveWithHistory()"></div>
+      <div class="field"><label>CREFITO</label>
+        <input type="text" id="f-crefito" oninput="saveWithHistory()"></div>
+    </div>
+    <div class="field"><label>Especialidade / Título curto (navbar)</label>
+      <input type="text" id="f-specialty" oninput="saveWithHistory()"></div>
+  </div>
+
+  <!-- HERO -->
+  <div class="sec-blk" id="sec-hero">
+    <div class="sec-lbl">Seção Principal (Hero)</div>
+    <div class="tog-row">
+      <label class="tog-wrap"><input type="checkbox" id="f-hero-show" checked onchange="saveWithHistory()"><div class="tog-track"></div></label>
+      <span class="tog-lbl" onclick="document.getElementById('f-hero-show').click()">Exibir seção Hero</span>
+    </div>
+    <div class="field"><label>Foto de perfil</label>
+      <div class="img-zone">
+        <input type="file" accept="image/*" onchange="handlePhoto(event)">
+        <img id="photoPreview" alt="foto" style="max-height:80px;max-width:100%;display:none;margin:0 auto 6px;border-radius:50%;object-fit:cover">
+        <div id="photoPh"><div class="upload-icon">📷</div><div class="upload-hint">Enviar foto profissional</div></div>
+      </div>
+    </div>
+    <div class="field"><label>Título principal</label>
+      <textarea id="f-hero-title" style="min-height:64px" oninput="saveWithHistory()"></textarea></div>
+    <div class="field"><label>Subtítulo (descreva seu diferencial)</label>
+      <textarea id="f-hero-sub" oninput="saveWithHistory()"></textarea></div>
+    <div class="g2">
+      <div class="field"><label>Texto do botão principal</label>
+        <input type="text" id="f-hero-btn" oninput="saveWithHistory()"></div>
+      <div class="field">
+        <label>Link do botão</label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="text" id="f-hero-btn-link" oninput="saveWithHistory()" style="flex:1">
+          <button type="button" onclick="useWhatsApp('f-hero-btn-link')" class="btn btn-sm" style="background:#128c7e;color:#fff;border-color:#128c7e" title="Usar link do WhatsApp">📲 WA</button>
+        </div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Botão secundário (opcional)</label>
+        <input type="text" id="f-hero-btn2" oninput="saveWithHistory()"></div>
+      <div class="field"><label>Link botão secundário</label>
+        <input type="text" id="f-hero-btn2-link" oninput="saveWithHistory()"></div>
+    </div>
+    <div class="field"><label>Credenciais / Badges (separadas por ·)</label>
+      <input type="text" id="f-hero-badges" oninput="saveWithHistory()" placeholder="CREFITO-3/00000 · Desde 2016"></div>
+  </div>
+
+  <!-- ESPECIALIDADES -->
+  <div class="sec-blk" id="sec-specialties">
+    <div class="sec-lbl">Especialidades / Diferenciais</div>
+    <div class="tog-row">
+      <label class="tog-wrap"><input type="checkbox" id="f-spec-show" checked onchange="saveWithHistory()"><div class="tog-track"></div></label>
+      <span class="tog-lbl" onclick="document.getElementById('f-spec-show').click()">Exibir seção Especialidades</span>
+    </div>
+    <div class="info-note">ℹ️ <strong>Dica:</strong> Descreva suas áreas de atuação com clareza. Use termos acessíveis ao público leigo, explicando brevemente cada abordagem.</div>
+    <div class="field"><label>Título da seção</label>
+      <input type="text" id="f-spec-title" oninput="saveWithHistory()"></div>
+    <div class="field"><label>Texto introdutório</label>
+      <textarea id="f-spec-intro" oninput="saveWithHistory()"></textarea></div>
+    <div class="field">
+      <label>Pilares / Diferenciais (ícone · nome · descrição)</label>
+      <div class="item-list" id="specList"></div>
+      <button class="btn-add" onclick="addSpec()">+ Adicionar pilar</button>
+    </div>
+  </div>
+
+  <!-- ATENDIMENTOS -->
+  <div class="sec-blk" id="sec-services">
+    <div class="sec-lbl">Modalidades de Atendimento</div>
+    <div class="tog-row">
+      <label class="tog-wrap"><input type="checkbox" id="f-svc-show" checked onchange="saveWithHistory()"><div class="tog-track"></div></label>
+      <span class="tog-lbl" onclick="document.getElementById('f-svc-show').click()">Exibir seção Atendimentos</span>
+    </div>
+    <div class="field"><label>Título da seção</label>
+      <input type="text" id="f-svc-title" oninput="saveWithHistory()"></div>
+    <div class="field"><label>Subtítulo</label>
+      <input type="text" id="f-svc-sub" oninput="saveWithHistory()"></div>
+    <div class="field">
+      <label>Modalidades (ícone · nome · descrição)</label>
+      <div class="item-list" id="svcList"></div>
+      <button class="btn-add" onclick="addSvc()">+ Adicionar modalidade</button>
+    </div>
+  </div>
+
+  <!-- SOBRE MIM -->
+  <div class="sec-blk" id="sec-about">
+    <div class="sec-lbl">Sobre Mim</div>
+    <div class="tog-row">
+      <label class="tog-wrap"><input type="checkbox" id="f-about-show" checked onchange="saveWithHistory()"><div class="tog-track"></div></label>
+      <span class="tog-lbl" onclick="document.getElementById('f-about-show').click()">Exibir seção Sobre Mim</span>
+    </div>
+    <div class="field">
+      <label>Foto profissional</label>
+      <div class="img-zone">
+        <input type="file" accept="image/*" onchange="handleAboutPhoto(event)">
+        <img id="aboutPhotoPreview" alt="foto sobre" style="max-height:100px;max-width:100%;display:none;margin:0 auto 6px;border-radius:10px;object-fit:cover">
+        <div id="aboutPhotoPh"><div class="upload-icon">📷</div><div class="upload-hint">Foto para seção Sobre Mim</div></div>
+      </div>
+    </div>
+    <div class="field"><label>Título</label>
+      <input type="text" id="f-about-title" oninput="saveWithHistory()"></div>
+    <div class="field"><label>Formação e experiência</label>
+      <textarea id="f-about-text" oninput="saveWithHistory()"></textarea></div>
+    <div class="field"><label>Filosofia de trabalho (opcional)</label>
+      <textarea id="f-about-text2" oninput="saveWithHistory()"></textarea></div>
+    <div class="g3">
+      <div class="field"><label>Dado 1 (ex: 10+)</label>
+        <input type="text" id="f-stat1-num" oninput="saveWithHistory()"></div>
+      <div class="field"><label>Dado 2</label>
+        <input type="text" id="f-stat2-num" oninput="saveWithHistory()"></div>
+      <div class="field"><label>Dado 3</label>
+        <input type="text" id="f-stat3-num" oninput="saveWithHistory()"></div>
+    </div>
+    <div class="g3">
+      <div class="field"><label>Label 1</label>
+        <input type="text" id="f-stat1-lbl" oninput="saveWithHistory()"></div>
+      <div class="field"><label>Label 2</label>
+        <input type="text" id="f-stat2-lbl" oninput="saveWithHistory()"></div>
+      <div class="field"><label>Label 3</label>
+        <input type="text" id="f-stat3-lbl" oninput="saveWithHistory()"></div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="sec-blk" id="sec-faq">
+    <div class="sec-lbl">Perguntas Frequentes</div>
+    <div class="tog-row">
+      <label class="tog-wrap"><input type="checkbox" id="f-faq-show" checked onchange="saveWithHistory()"><div class="tog-track"></div></label>
+      <span class="tog-lbl" onclick="document.getElementById('f-faq-show').click()">Exibir FAQ</span>
+    </div>
+    <div class="field"><label>Título da seção</label>
+      <input type="text" id="f-faq-title" oninput="saveWithHistory()"></div>
+    <div class="field">
+      <label>Perguntas e respostas</label>
+      <div class="faq-list" id="faqList"></div>
+      <button class="btn-add" onclick="addFaq()">+ Adicionar pergunta</button>
+    </div>
+  </div>
+
+  <!-- AGENDAMENTO / CTA -->
+  <div class="sec-blk" id="sec-cta">
+    <div class="sec-lbl">Chamada para Agendamento</div>
+    <div class="tog-row">
+      <label class="tog-wrap"><input type="checkbox" id="f-cta-show" checked onchange="saveWithHistory()"><div class="tog-track"></div></label>
+      <span class="tog-lbl" onclick="document.getElementById('f-cta-show').click()">Exibir seção Agendamento</span>
+    </div>
+    <div class="field"><label>Título</label>
+      <input type="text" id="f-cta-title" oninput="saveWithHistory()"></div>
+    <div class="field"><label>Texto motivacional</label>
+      <textarea id="f-cta-sub" oninput="saveWithHistory()"></textarea></div>
+    <div class="g2">
+      <div class="field"><label>Texto do botão</label>
+        <input type="text" id="f-cta-btn" oninput="saveWithHistory()"></div>
+      <div class="field">
+        <label>Link</label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="text" id="f-cta-link" oninput="saveWithHistory()" style="flex:1">
+          <button type="button" onclick="useWhatsApp('f-cta-link')" class="btn btn-sm" style="background:#128c7e;color:#fff;border-color:#128c7e">📲 WA</button>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Mensagem pré-definida do WhatsApp</label>
+      <input type="text" id="f-wa-msg" placeholder="Olá! Gostaria de agendar uma avaliação." oninput="saveWithHistory()">
+    </div>
+    <div class="field"><label>Nota informativa</label>
+      <input type="text" id="f-cta-note" oninput="saveWithHistory()" placeholder="Atendimento em consultório e domiciliar · Sessão de 50 min"></div>
+  </div>
+
+  <!-- CONTATO -->
+  <div class="sec-blk" id="sec-contact">
+    <div class="sec-lbl">Rodapé / Contato</div>
+    <div class="tog-row">
+      <label class="tog-wrap"><input type="checkbox" id="f-contact-show" checked onchange="saveWithHistory()"><div class="tog-track"></div></label>
+      <span class="tog-lbl" onclick="document.getElementById('f-contact-show').click()">Exibir rodapé de contato</span>
+    </div>
+    <div class="g2">
+      <div class="field"><label>E-mail</label>
+        <input type="text" id="f-email" oninput="saveWithHistory()"></div>
+      <div class="field"><label>Telefone / WhatsApp</label>
+        <input type="text" id="f-phone" oninput="saveWithHistory()"></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Cidade</label>
+        <input type="text" id="f-location" oninput="saveWithHistory()"></div>
+      <div class="field"><label>Endereço (opcional)</label>
+        <input type="text" id="f-address" oninput="saveWithHistory()"></div>
+    </div>
+    <div class="field" style="margin-top:4px">
+      <label>Redes sociais</label>
+      <div class="soc-fields">
+        <div class="soc-row">
+          <div class="soc-badge" style="background:#25D366"><svg viewBox="0 0 24 24"><path fill="#fff" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path fill="#fff" d="M12 0C5.373 0 0 5.373 0 12c0 2.123.555 4.116 1.528 5.845L.057 23.08a.75.75 0 00.923.924l5.357-1.483A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.73 9.73 0 01-4.966-1.357l-.356-.212-3.694 1.022 1.037-3.585-.232-.369A9.718 9.718 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg></div>
+          <input type="text" id="f-whatsapp" placeholder="https://wa.me/5511... ou (11) 99999-0000" oninput="syncWaLinks()">
+        </div>
+        <div class="soc-row">
+          <div class="soc-badge" style="background:#E1306C"><svg viewBox="0 0 24 24"><path fill="#fff" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></div>
+          <input type="text" id="f-ig" placeholder="https://instagram.com/..." oninput="saveWithHistory()">
+        </div>
+        <div class="soc-row">
+          <div class="soc-badge" style="background:#1877F2"><svg viewBox="0 0 24 24"><path fill="#fff" d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.269h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg></div>
+          <input type="text" id="f-fb" placeholder="https://facebook.com/..." oninput="saveWithHistory()">
+        </div>
+        <div class="soc-row">
+          <div class="soc-badge" style="background:#FF0000"><svg viewBox="0 0 24 24"><path fill="#fff" d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
+          <input type="text" id="f-yt" placeholder="https://youtube.com/@..." oninput="saveWithHistory()">
+        </div>
+        <div class="soc-row">
+          <div class="soc-badge" style="background:#0A66C2"><svg viewBox="0 0 24 24"><path fill="#fff" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></div>
+          <input type="text" id="f-li" placeholder="https://linkedin.com/in/..." oninput="saveWithHistory()">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CORES / APARÊNCIA -->
+  <div class="sec-blk" id="sec-colors">
+    <div class="sec-lbl">Aparência</div>
+    <div class="field">
+      <label>Cor principal</label>
+      <div class="color-row">
+        <div class="swatch" style="background:#00c896" data-c="#00c896" onclick="pickColor('#00c896')"></div>
+        <div class="swatch" style="background:#3b82f6" data-c="#3b82f6" onclick="pickColor('#3b82f6')"></div>
+        <div class="swatch" style="background:#0ea5e9" data-c="#0ea5e9" onclick="pickColor('#0ea5e9')"></div>
+        <div class="swatch" style="background:#10b981" data-c="#10b981" onclick="pickColor('#10b981')"></div>
+        <div class="swatch" style="background:#f59e0b" data-c="#f59e0b" onclick="pickColor('#f59e0b')"></div>
+        <div class="swatch" style="background:#ef4444" data-c="#ef4444" onclick="pickColor('#ef4444')"></div>
+        <div class="swatch" style="background:#8b5cf6" data-c="#8b5cf6" onclick="pickColor('#8b5cf6')"></div>
+        <div class="swatch" style="background:#64748b" data-c="#64748b" onclick="pickColor('#64748b')"></div>
+        <input type="text" class="hex-inp" id="hexInp" placeholder="#hex" oninput="onHexInp(this)">
+        <input type="color" class="nat-clr" id="natClr" oninput="pickColor(this.value)">
+      </div>
+    </div>
+    <div class="field" style="margin-top:10px">
+      <label>Estilo do Hero</label>
+      <div class="hero-style-grid" id="heroStyleGrid"></div>
+      <input type="hidden" id="f-hero-style" value="dark-gradient">
+    </div>
+  </div>
+
+  <!-- SEO -->
+  <div class="sec-blk" id="sec-seo">
+    <div class="sec-lbl">SEO / Configurações</div>
+    <div class="field"><label>Título da aba (navegador)</label>
+      <input type="text" id="f-page-title" oninput="saveWithHistory()"></div>
+    <div class="field"><label>Meta descrição</label>
+      <textarea id="f-meta" style="min-height:60px" oninput="saveWithHistory()"></textarea></div>
+    <div class="field"><label>Texto do copyright</label>
+      <input type="text" id="f-copyright" oninput="saveWithHistory()"></div>
+  </div>
+
+</main>
+</div>
+
+<!-- MOBILE NAV -->
+<nav id="mobileNav">
+  <button class="mnav active" data-sec="sec-brand" onclick="goTo('sec-brand')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m-7.07-2.93l2.83-2.83m8.48-8.48l2.83-2.83M2 12h4m12 0h4"/></svg>Marca</button>
+  <button class="mnav" data-sec="sec-hero" onclick="goTo('sec-hero')"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>Hero</button>
+  <button class="mnav" data-sec="sec-services" onclick="goTo('sec-services')"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>Atend.</button>
+  <button class="mnav" data-sec="sec-cta" onclick="goTo('sec-cta')"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6"/></svg>CTA</button>
+  <button class="mnav" data-sec="sec-colors" onclick="goTo('sec-colors')"><svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>Cores</button>
+</nav>
+
+<!-- PREVIEW MODAL -->
+<div id="pvModal">
+  <div class="pvm-inner">
+    <div class="pvm-head">
+      <div class="pvm-head-left">
+        <span class="pvm-head-title">Preview</span>
+        <div class="pvm-dv-btns">
+          <button class="pvm-dv-btn active" id="pvBtnDesk">Desktop</button>
+          <button class="pvm-dv-btn" id="pvBtnMob">Mobile</button>
+        </div>
+      </div>
+      <button class="pvm-close" id="pvClose">×</button>
+    </div>
+    <div class="pvm-body" id="pvBody">
+      <iframe id="pvFrame" scrolling="yes"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- TEMPLATE MODAL -->
+<div id="tplModal">
+  <div class="tpl-inner">
+    <div class="tpl-head">
+      <div class="tpl-head-text">
+        <h2>Escolha um template</h2>
+        <p>Preenche automaticamente. Você pode editar tudo depois.</p>
+      </div>
+      <button class="tpl-close" id="tplClose">×</button>
+    </div>
+    <div class="tpl-body" id="tplGrid"></div>
+    <div class="tpl-foot">
+      <span class="tpl-warn">⚠ Substituirá os textos (fotos e cores mantidas)</span>
+    </div>
+  </div>
+</div>
+
+<!-- CROP MODAL -->
+<div id="cropModal">
+  <div class="crop-inner">
+    <div class="crop-title" id="cropTitle">Ajustar foto</div>
+    <div class="crop-canvas-wrap" id="cropWrap"><canvas id="cropCanvas"></canvas></div>
+    <div class="crop-controls">
+      <label>Zoom</label>
+      <input type="range" id="cropZoom" min="1" max="3" step="0.01" value="1" oninput="cropDraw()">
+    </div>
+    <div class="crop-actions">
+      <button class="btn" onclick="closeCrop()">Cancelar</button>
+      <button class="btn btn-accent" onclick="confirmCrop()">✓ Usar foto</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════
+   STATE & DEFAULTS
+════════════════════════════════ */
+const KEY='fisio-lp-v1';
+const DEFAULTS={
+  brand:'Leonardo Oliveira',
+  crefito:'CREFITO-5/000000-F',
+  specialty:'Fisioterapeuta · Alívio de Dores e Reabilitação',
+  logo:null,photo:null,aboutPhoto:null,
+  heroShow:true,
+  heroTitle:'Chega de conviver com a dor. Recupere seus movimentos.',
+  heroSub:'Fisioterapeuta em Caxias do Sul com atendimento em consultório e domiciliar. Tratamento individualizado para dores nas costas, ombro, joelho e tensões musculares — focado na causa, não só no sintoma.',
+  heroBtn:'Agendar avaliação pelo WhatsApp',
+  heroBtnLink:'#agendamento',
+  heroBtn2:'Como funciona o tratamento',
+  heroBtn2Link:'#especialidades',
+  heroBadges:'CREFITO-5/000000-F · Caxias do Sul · Consultório e domiciliar',
+  specShow:true,
+  specTitle:'O que eu trato',
+  specIntro:'Atendo as queixas mais comuns do dia a dia com uma abordagem que investiga a causa real da sua dor — e não apenas mascara os sintomas.',
+  specialties:[
+    {icon:'🔴',title:'Dor nas costas e lombar',desc:'Lombalgia, travamento, hérnia de disco e dor ciática. Tratamento com terapia manual e exercícios para alívio rápido e prevenção de recidivas.'},
+    {icon:'💪',title:'Dor no ombro',desc:'Tendinite, bursite, síndrome do impacto e limitação de movimento. Recuperação da amplitude e força com protocolo individualizado.'},
+    {icon:'🦵',title:'Dor no joelho',desc:'Condromalácia, artrose, lesões ligamentares e meniscais. Reabilitação para estabilidade, confiança e retorno às atividades.'},
+    {icon:'😣',title:'Tensão muscular e estresse',desc:'Dores no pescoço, trapézio e ombros por má postura ou estresse. Liberação miofascial e orientações posturais para alívio duradouro.'},
+    {icon:'🏋️',title:'Desconforto pós-treino',desc:'Dores musculares, sobrecarga articular e lesões de academia. Recovery com bota pneumática, laser terapêutico e exercícios corretivos.'},
+    {icon:'🚶',title:'Dificuldade de movimentos',desc:'Rigidez ao levantar, subir escadas ou realizar atividades do dia a dia. Mobilizações articulares e fortalecimento funcional progressivo.'},
+  ],
+  svcShow:true,
+  svcTitle:'Onde e como atendo',
+  svcSub:'Duas modalidades para se adaptar à sua rotina — com a mesma qualidade e atenção.',
+  services:[
+    {icon:'🏥',title:'No consultório',desc:'Atendimento em Caxias do Sul com estrutura completa: laser terapêutico, bota de compressão pneumática (Recovery), espaço para exercícios e equipamentos de terapia manual.'},
+    {icon:'🏠',title:'Na sua casa (domiciliar)',desc:'Ideal para pós-cirúrgico, idosos ou quem prefere o conforto de casa. Levo equipamentos portáteis e monto o plano de tratamento no seu ambiente.'},
+    {icon:'📋',title:'Avaliação completa',desc:'Toda primeira sessão começa com uma avaliação detalhada: histórico, sintomas, testes de movimento e definição do plano de tratamento individualizado.'},
+    {icon:'📈',title:'Acompanhamento da evolução',desc:'Reavaliações periódicas para medir seu progresso, ajustar o plano e garantir que você alcance seus objetivos com clareza.'},
+  ],
+  aboutShow:true,
+  aboutTitle:'Quem sou eu',
+  aboutText:'Sou Leonardo Oliveira, fisioterapeuta em Caxias do Sul. Meu trabalho é ajudar pessoas que convivem com dores no dia a dia — nas costas, no ombro, no joelho, tensões musculares — a recuperar a liberdade de se movimentar sem desconforto.',
+  aboutText2:'Trabalho com terapia manual, exercícios terapêuticos, liberação miofascial, mobilizações articulares, laser terapêutico e bota de compressão pneumática. Cada paciente recebe um plano exclusivo, porque acredito que tratar a causa é mais importante do que tratar o sintoma.',
+  stat1Num:'—',stat1Lbl:'anos de experiência',
+  stat2Num:'—',stat2Lbl:'pacientes atendidos',
+  stat3Num:'100%',stat3Lbl:'foco individualizado',
+  faqShow:true,
+  faqTitle:'Dúvidas frequentes',
+  faqs:[
+    {q:'Preciso de pedido médico para fazer fisioterapia?',a:'Não. O fisioterapeuta tem autonomia para avaliar e tratar. Você pode agendar diretamente pelo WhatsApp. Se necessário, eu indico o médico para exames complementares.'},
+    {q:'Como funciona a primeira sessão?',a:'Começo com uma avaliação detalhada: escuto seu histórico, analiso seus sintomas, faço testes de movimento e defino um plano de tratamento claro e individualizado. Já iniciamos o tratamento no mesmo dia.'},
+    {q:'Quantas sessões vou precisar?',a:'Depende do quadro. Na avaliação já traço uma previsão realista. Dores agudas costumam melhorar em poucas sessões. Quadros crônicos exigem acompanhamento mais longo, mas você vai perceber a evolução desde o início.'},
+    {q:'Qual a diferença entre consultório e domiciliar?',a:'No consultório em Caxias do Sul, tenho estrutura completa (laser, bota pneumática, equipamentos). No domiciliar, levo equipamentos portáteis e foco em terapia manual e exercícios. Ambos são eficazes — escolha o que funciona melhor para você.'},
+    {q:'Vocês aceitam convênio?',a:'O atendimento é particular. Emito nota fiscal para que você solicite reembolso ao seu plano de saúde, se ele oferecer essa opção.'},
+    {q:'O que é a bota de compressão pneumática (Recovery)?',a:'É um equipamento que faz compressão intermitente nas pernas, acelerando a recuperação muscular, reduzindo inchaço e melhorando a circulação. Muito usada por atletas e excelente para pós-treino e pós-cirúrgico.'},
+  ],
+  ctaShow:true,
+  ctaTitle:'O primeiro passo é uma avaliação',
+  ctaSub:'Me conta o que você está sentindo. Na avaliação, vou identificar a causa da sua dor e te explicar exatamente o que podemos fazer. Sem compromisso — você decide se quer seguir.',
+  ctaBtn:'Agendar pelo WhatsApp',
+  ctaLink:'',
+  waMsg:'Olá, Leonardo! Gostaria de agendar uma avaliação fisioterapêutica.',
+  ctaNote:'Atendimento em consultório e domiciliar em Caxias do Sul · Sessão individual de 50 min a 1h',
+  contactShow:true,
+  email:'',phone:'',location:'Caxias do Sul, RS',address:'',
+  whatsapp:'',ig:'',fb:'',yt:'',li:'',
+  color:'#14b8a6',
+  heroStyle:'midnight',
+  pageTitle:'Leonardo Oliveira — Fisioterapeuta em Caxias do Sul · Dor nas Costas, Ombro e Joelho',
+  meta:'Fisioterapeuta em Caxias do Sul com atendimento em consultório e domiciliar. Especialista em dor nas costas, dor no ombro, dor no joelho, reabilitação e fisioterapia domiciliar. Agende sua avaliação.',
+  copyright:'',
+};
+
+let ST={...DEFAULTS};
+
+/* ════════════════════════════════
+   UNDO / REDO
+════════════════════════════════ */
+const HISTORY=[],FUTURE=[];
+const MAX_HIST=40;
+function pushHistory(){HISTORY.push(JSON.stringify(ST));if(HISTORY.length>MAX_HIST)HISTORY.shift();FUTURE.length=0;}
+function syncUndoButtons(){
+  const u=document.getElementById('btnUndo'),r=document.getElementById('btnRedo');
+  if(!u||!r)return;
+  u.disabled=!HISTORY.length;r.disabled=!FUTURE.length;
+}
+function undo(){if(!HISTORY.length)return;FUTURE.push(JSON.stringify(ST));ST=JSON.parse(HISTORY.pop());applyState();setTimeout(syncUndoButtons,0);}
+function redo(){if(!FUTURE.length)return;HISTORY.push(JSON.stringify(ST));ST=JSON.parse(FUTURE.pop());applyState();setTimeout(syncUndoButtons,0);}
+function applyState(){
+  fillForm();renderSpecList();renderSvcList();renderFaqList();applyColor(ST.color);renderHeroStyleCards();
+  try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}
+  setStatus('saved');setTimeout(()=>{setStatus('idle');renderPreview();syncUndoButtons();},100);
+}
+
+
+/* ════════════════════════════════
+   HERO STYLES
+════════════════════════════════ */
+const HERO_STYLES=[
+  {value:'dark-gradient',label:'Escuro gradiente'},
+  {value:'dark-solid',label:'Escuro sólido'},
+  {value:'accent-gradient',label:'Cor gradiente'},
+  {value:'accent-dark',label:'Cor escura'},
+  {value:'light-clean',label:'Claro limpo'},
+  {value:'light-warm',label:'Claro quente'},
+  {value:'midnight',label:'Meia-noite'},
+  {value:'image',label:'Foto de fundo'},
+];
+function getHeroStyleBg(v,c){
+  const cd=dk(c,.35),cl=lx(c,.88);
+  switch(v){
+    case'dark-gradient':return'linear-gradient(135deg,#0f1115 0%,#1a1d25 50%,'+dk(c,.7)+' 100%)';
+    case'dark-solid':return'#111318';
+    case'accent-gradient':return'linear-gradient(135deg,'+c+' 0%,'+cd+' 100%)';
+    case'accent-dark':return'linear-gradient(135deg,'+dk(c,.5)+' 0%,'+dk(c,.7)+' 100%)';
+    case'light-clean':return'#f8f9fb';
+    case'light-warm':return'#f5f0ea';
+    case'midnight':return'linear-gradient(180deg,#080a10 0%,#111827 100%)';
+    case'image':return'linear-gradient(135deg,#333 0%,#111 100%)';
+    default:return'linear-gradient(135deg,#0f1115,#1a1d25)';
+  }
+}
+function renderHeroStyleCards(){
+  const grid=document.getElementById('heroStyleGrid');if(!grid)return;
+  const c=ST.color||'#00c896',cur=ST.heroStyle||'dark-gradient';
+  grid.innerHTML=HERO_STYLES.map(s=>{
+    const bg=getHeroStyleBg(s.value,c);
+    const active=s.value===cur?' active':'';
+    return'<div class="hs-card'+active+'" onclick="pickHeroStyle(\''+s.value+'\')"><div class="hs-preview" style="background:'+bg+'"></div><div class="hs-label">'+s.label+'</div></div>';
+  }).join('');
+}
+function pickHeroStyle(v){pushHistory();ST.heroStyle=v;document.getElementById('f-hero-style').value=v;renderHeroStyleCards();save();}
+/* ════════════════════════════════
+   INIT
+════════════════════════════════ */
+(function init(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(raw){ST=Object.assign({},DEFAULTS,JSON.parse(raw));}
+  }catch(e){}
+  try{
+    fillForm();renderSpecList();renderSvcList();renderFaqList();applyColor(ST.color);renderHeroStyleCards();
+    setTimeout(()=>{syncUndoButtons();},50);
+  }catch(e){console.error('Init error:',e);}
+})();
+
+/* ════════════════════════════════
+   FILL / READ FORM
+════════════════════════════════ */
+function fillForm(){
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
+  const sc=(id,v)=>{const el=document.getElementById(id);if(el)el.checked=!!v;};
+  s('f-brand',ST.brand);s('f-crefito',ST.crefito);s('f-specialty',ST.specialty);
+  sc('f-hero-show',ST.heroShow);
+  s('f-hero-title',ST.heroTitle);s('f-hero-sub',ST.heroSub);
+  s('f-hero-btn',ST.heroBtn);s('f-hero-btn-link',ST.heroBtnLink);
+  s('f-hero-btn2',ST.heroBtn2);s('f-hero-btn2-link',ST.heroBtn2Link);
+  s('f-hero-badges',ST.heroBadges);
+
+
+
+  sc('f-spec-show',ST.specShow);
+  s('f-spec-title',ST.specTitle);s('f-spec-intro',ST.specIntro);
+  sc('f-svc-show',ST.svcShow);
+  s('f-svc-title',ST.svcTitle);s('f-svc-sub',ST.svcSub);
+  sc('f-about-show',ST.aboutShow);
+  s('f-about-title',ST.aboutTitle);s('f-about-text',ST.aboutText);s('f-about-text2',ST.aboutText2);
+  s('f-stat1-num',ST.stat1Num);s('f-stat1-lbl',ST.stat1Lbl);
+  s('f-stat2-num',ST.stat2Num);s('f-stat2-lbl',ST.stat2Lbl);
+  s('f-stat3-num',ST.stat3Num);s('f-stat3-lbl',ST.stat3Lbl);
+  sc('f-faq-show',ST.faqShow);s('f-faq-title',ST.faqTitle);
+  sc('f-cta-show',ST.ctaShow);
+  s('f-cta-title',ST.ctaTitle);s('f-cta-sub',ST.ctaSub);
+  s('f-cta-btn',ST.ctaBtn);s('f-cta-link',ST.ctaLink);s('f-cta-note',ST.ctaNote);
+  s('f-wa-msg',ST.waMsg);
+  sc('f-contact-show',ST.contactShow);
+  s('f-email',ST.email);s('f-phone',ST.phone);
+  s('f-location',ST.location);s('f-address',ST.address);
+  s('f-whatsapp',ST.whatsapp);s('f-ig',ST.ig);s('f-fb',ST.fb);s('f-yt',ST.yt);s('f-li',ST.li);
+  s('f-page-title',ST.pageTitle);s('f-meta',ST.meta);s('f-copyright',ST.copyright);
+  const hs=document.getElementById('f-hero-style');if(hs)hs.value=ST.heroStyle||'dark-gradient';
+  syncSwatches(ST.color);
+  if(ST.logo)showLogo(ST.logo);
+  if(ST.photo)showPhoto(ST.photo);
+  if(ST.aboutPhoto)showAboutPhoto(ST.aboutPhoto);
+}
+
+function readForm(){
+  const g=id=>(document.getElementById(id)||{}).value||'';
+  const gc=id=>!!(document.getElementById(id)||{}).checked;
+  ST.brand=g('f-brand');ST.crefito=g('f-crefito');ST.specialty=g('f-specialty');
+  ST.heroShow=gc('f-hero-show');
+  ST.heroTitle=g('f-hero-title');ST.heroSub=g('f-hero-sub');
+  ST.heroBtn=g('f-hero-btn');ST.heroBtnLink=g('f-hero-btn-link');
+  ST.heroBtn2=g('f-hero-btn2');ST.heroBtn2Link=g('f-hero-btn2-link');
+  ST.heroBadges=g('f-hero-badges');
+
+  ST.specShow=gc('f-spec-show');ST.specTitle=g('f-spec-title');ST.specIntro=g('f-spec-intro');
+  ST.svcShow=gc('f-svc-show');ST.svcTitle=g('f-svc-title');ST.svcSub=g('f-svc-sub');
+  ST.aboutShow=gc('f-about-show');
+  ST.aboutTitle=g('f-about-title');ST.aboutText=g('f-about-text');ST.aboutText2=g('f-about-text2');
+  ST.stat1Num=g('f-stat1-num');ST.stat1Lbl=g('f-stat1-lbl');
+  ST.stat2Num=g('f-stat2-num');ST.stat2Lbl=g('f-stat2-lbl');
+  ST.stat3Num=g('f-stat3-num');ST.stat3Lbl=g('f-stat3-lbl');
+  ST.faqShow=gc('f-faq-show');ST.faqTitle=g('f-faq-title');
+  ST.ctaShow=gc('f-cta-show');ST.ctaTitle=g('f-cta-title');ST.ctaSub=g('f-cta-sub');
+  ST.ctaBtn=g('f-cta-btn');ST.ctaLink=g('f-cta-link');ST.ctaNote=g('f-cta-note');
+  ST.waMsg=g('f-wa-msg');
+  ST.contactShow=gc('f-contact-show');
+  ST.email=g('f-email');ST.phone=g('f-phone');
+  ST.location=g('f-location');ST.address=g('f-address');
+  ST.whatsapp=g('f-whatsapp');ST.ig=g('f-ig');ST.fb=g('f-fb');ST.yt=g('f-yt');ST.li=g('f-li');
+  ST.pageTitle=g('f-page-title');ST.meta=g('f-meta');ST.copyright=g('f-copyright');
+  ST.heroStyle=g('f-hero-style')||'dark-gradient';
+  ST.specialties=getSpecRows();ST.services=getSvcRows();ST.faqs=getFaqRows();
+}
+
+/* ════════════════════════════════
+   SAVE
+════════════════════════════════ */
+let _pvTimer=null;
+function save(){
+  readForm();
+  try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}
+  setStatus('saving');
+  clearTimeout(_pvTimer);
+  _pvTimer=setTimeout(()=>{renderPreview();setStatus('saved');setTimeout(()=>setStatus('idle'),2000);},400);
+}
+let _histTimer=null;
+function saveWithHistory(){save();clearTimeout(_histTimer);_histTimer=setTimeout(()=>{pushHistory();syncUndoButtons();},1000);}
+function setStatus(s){
+  const el=document.getElementById('saveInd'),tx=document.getElementById('saveText');
+  el.className=s;
+  if(s==='saving')tx.textContent='Salvando…';
+  else if(s==='saved')tx.textContent='✓ Salvo';
+  else tx.textContent='Pronto';
+}
+window.addEventListener('beforeunload',()=>{try{readForm();localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}});
+
+/* ════════════════════════════════
+   SPECIALTIES LIST
+════════════════════════════════ */
+function renderSpecList(){
+  const list=document.getElementById('specList');list.innerHTML='';
+  (ST.specialties||[]).forEach((a,i)=>{
+    const row=document.createElement('div');row.className='item-row';
+    row.innerHTML='<input type="text" class="item-icon" value="'+esc(a.icon)+'" placeholder="🦴" oninput="saveWithHistory()">'+
+      '<input type="text" value="'+esc(a.title)+'" placeholder="Nome" oninput="saveWithHistory()">'+
+      '<input type="text" value="'+esc(a.desc)+'" placeholder="Descrição" oninput="saveWithHistory()">'+
+      '<button class="btn-del" onclick="delSpec('+i+')">−</button>';
+    list.appendChild(row);
+  });
+}
+function getSpecRows(){return Array.from(document.querySelectorAll('#specList .item-row')).map(r=>{const ins=r.querySelectorAll('input');return{icon:ins[0]?.value||'',title:ins[1]?.value||'',desc:ins[2]?.value||''};});}
+function addSpec(){pushHistory();syncUndoButtons();ST.specialties=getSpecRows();ST.specialties.push({icon:'💪',title:'',desc:''});renderSpecList();save();}
+function delSpec(i){pushHistory();syncUndoButtons();ST.specialties=getSpecRows();ST.specialties.splice(i,1);renderSpecList();save();}
+
+/* ════════════════════════════════
+   SERVICES LIST
+════════════════════════════════ */
+function renderSvcList(){
+  const list=document.getElementById('svcList');list.innerHTML='';
+  (ST.services||[]).forEach((s,i)=>{
+    const row=document.createElement('div');row.className='item-row';
+    row.innerHTML='<input type="text" class="item-icon" value="'+esc(s.icon)+'" placeholder="🏥" oninput="saveWithHistory()">'+
+      '<input type="text" value="'+esc(s.title)+'" placeholder="Modalidade" oninput="saveWithHistory()">'+
+      '<input type="text" value="'+esc(s.desc)+'" placeholder="Descrição" oninput="saveWithHistory()">'+
+      '<button class="btn-del" onclick="delSvc('+i+')">−</button>';
+    list.appendChild(row);
+  });
+}
+function getSvcRows(){return Array.from(document.querySelectorAll('#svcList .item-row')).map(r=>{const ins=r.querySelectorAll('input');return{icon:ins[0]?.value||'',title:ins[1]?.value||'',desc:ins[2]?.value||''};});}
+function addSvc(){pushHistory();syncUndoButtons();ST.services=getSvcRows();ST.services.push({icon:'✨',title:'',desc:''});renderSvcList();save();}
+function delSvc(i){pushHistory();syncUndoButtons();ST.services=getSvcRows();ST.services.splice(i,1);renderSvcList();save();}
+
+/* ════════════════════════════════
+   FAQ LIST
+════════════════════════════════ */
+function renderFaqList(){
+  const list=document.getElementById('faqList');list.innerHTML='';
+  (ST.faqs||[]).forEach((f,i)=>{
+    const row=document.createElement('div');row.className='faq-row';
+    row.innerHTML='<div class="faq-row-top"><input type="text" value="'+esc(f.q)+'" placeholder="Pergunta" oninput="saveWithHistory()">'+
+      '<button class="btn-del" onclick="delFaq('+i+')">−</button></div>'+
+      '<textarea placeholder="Resposta..." oninput="saveWithHistory()">'+esc(f.a)+'</textarea>';
+    list.appendChild(row);
+  });
+}
+function getFaqRows(){return Array.from(document.querySelectorAll('#faqList .faq-row')).map(r=>{const inp=r.querySelector('input[type="text"]'),ta=r.querySelector('textarea');return{q:inp?.value||'',a:ta?.value||''};});}
+function addFaq(){pushHistory();syncUndoButtons();ST.faqs=getFaqRows();ST.faqs.push({q:'',a:''});renderFaqList();save();}
+function delFaq(i){pushHistory();syncUndoButtons();ST.faqs=getFaqRows();ST.faqs.splice(i,1);renderFaqList();save();}
+
+/* ════════════════════════════════
+   DOMICILIAR TOGGLE
+════════════════════════════════ */
+
+/* ════════════════════════════════
+   WHATSAPP HELPERS
+════════════════════════════════ */
+function buildWaLink(raw,msg){
+  if(!raw)return'';let url=raw.trim();
+  if(url.startsWith('https://wa.me/')||url.startsWith('http://wa.me/'))url=url.split('?')[0];
+  else{const d=url.replace(/\D/g,'');const wc=d.startsWith('55')&&d.length>=12?d:'55'+d;url='https://wa.me/'+wc;}
+  if(msg&&msg.trim())url+='?text='+encodeURIComponent(msg.trim());
+  return url;
+}
+function useWhatsApp(tid){
+  const wa=document.getElementById('f-whatsapp')?.value?.trim()||'';
+  const msg=document.getElementById('f-wa-msg')?.value?.trim()||'';
+  if(!wa){alert('Preencha o campo WhatsApp em Contato primeiro.');return;}
+  const el=document.getElementById(tid);if(el){el.value=buildWaLink(wa,msg);save();}
+}
+function syncWaLinks(){
+  const wa=document.getElementById('f-whatsapp')?.value?.trim()||'';
+  const msg=document.getElementById('f-wa-msg')?.value?.trim()||'';
+  if(!wa)return;const nl=buildWaLink(wa,msg);
+  ['f-hero-btn-link','f-cta-link'].forEach(id=>{const el=document.getElementById(id);if(el&&el.value&&(el.value.includes('wa.me')||el.value===''))el.value=nl;});
+  save();
+}
+
+/* ════════════════════════════════
+   COLORS
+════════════════════════════════ */
+function pickColor(hex){
+  if(!/^#[0-9a-fA-F]{6}$/.test(hex))return;
+  ST.color=hex;document.getElementById('hexInp').value=hex;document.getElementById('natClr').value=hex;
+  syncSwatches(hex);applyColor(hex);renderHeroStyleCards();save();
+}
+function onHexInp(el){if(/^#[0-9a-fA-F]{6}$/.test(el.value))pickColor(el.value);}
+function syncSwatches(hex){document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active',s.dataset.c===hex));}
+function applyColor(hex){
+  document.documentElement.style.setProperty('--accent',hex);
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  document.documentElement.style.setProperty('--accent-dim','rgba('+r+','+g+','+b+',.08)');
+  document.documentElement.style.setProperty('--accent-glow','rgba('+r+','+g+','+b+',.18)');
+  const lr=r/255,lg=g/255,lb=b/255;
+  const lum=0.2126*(lr<=0.03928?lr/12.92:Math.pow((lr+0.055)/1.055,2.4))+0.7152*(lg<=0.03928?lg/12.92:Math.pow((lg+0.055)/1.055,2.4))+0.0722*(lb<=0.03928?lb/12.92:Math.pow((lb+0.055)/1.055,2.4));
+  document.documentElement.style.setProperty('--accent-text',lum>0.35?'#000':'#fff');
+}
+
+/* ════════════════════════════════
+   CROP
+════════════════════════════════ */
+let _cropImg=null,_cropTarget=null,_cropDragStart=null;
+let _cropOX=0,_cropOY=0,_cropZoom=1;
+const CROP_W=400,CROP_H=340;
+function openCrop(src,targetKey,title){
+  _cropTarget=targetKey;_cropZoom=1;_cropOX=0;_cropOY=0;
+  document.getElementById('cropTitle').textContent=title||'Ajustar foto';
+  document.getElementById('cropZoom').value=1;
+  const canvas=document.getElementById('cropCanvas');canvas.width=CROP_W;canvas.height=CROP_H;
+  _cropImg=new Image();_cropImg.onload=()=>{cropCenter();cropDraw();};_cropImg.src=src;
+  document.getElementById('cropModal').classList.add('open');bindCropEvents();
+}
+function cropCenter(){
+  const sc=Math.max(CROP_W/_cropImg.width,CROP_H/_cropImg.height);
+  _cropZoom=sc;const z=document.getElementById('cropZoom');z.min=sc;z.max=sc*3;z.step=sc*0.01;z.value=sc;
+  _cropOX=(CROP_W-_cropImg.width*sc)/2;_cropOY=(CROP_H-_cropImg.height*sc)/2;
+}
+function cropClamp(){
+  const iw=_cropImg.width*_cropZoom,ih=_cropImg.height*_cropZoom;
+  _cropOX=Math.min(0,Math.max(CROP_W-iw,_cropOX));_cropOY=Math.min(0,Math.max(CROP_H-ih,_cropOY));
+}
+function cropDraw(){
+  const oz=_cropZoom;_cropZoom=parseFloat(document.getElementById('cropZoom').value);
+  if(oz!==_cropZoom&&oz>0){const cx=CROP_W/2,cy=CROP_H/2;_cropOX=cx-(cx-_cropOX)*(_cropZoom/oz);_cropOY=cy-(cy-_cropOY)*(_cropZoom/oz);}
+  cropClamp();const ctx=document.getElementById('cropCanvas').getContext('2d');ctx.clearRect(0,0,CROP_W,CROP_H);
+  ctx.drawImage(_cropImg,_cropOX,_cropOY,_cropImg.width*_cropZoom,_cropImg.height*_cropZoom);
+}
+function cropDisplayRatio(){return CROP_W/document.getElementById('cropCanvas').getBoundingClientRect().width;}
+function bindCropEvents(){
+  const w=document.getElementById('cropWrap');
+  w.onmousedown=e=>{const r=cropDisplayRatio();_cropDragStart={x:e.clientX*r-_cropOX,y:e.clientY*r-_cropOY};
+    w.onmousemove=e=>{const r=cropDisplayRatio();_cropOX=e.clientX*r-_cropDragStart.x;_cropOY=e.clientY*r-_cropDragStart.y;cropClamp();cropDraw();};
+    w.onmouseup=w.onmouseleave=()=>{w.onmousemove=null;};};
+  w.ontouchstart=e=>{const t=e.touches[0],r=cropDisplayRatio();_cropDragStart={x:t.clientX*r-_cropOX,y:t.clientY*r-_cropOY};
+    w.ontouchmove=e=>{const t=e.touches[0],r=cropDisplayRatio();_cropOX=t.clientX*r-_cropDragStart.x;_cropOY=t.clientY*r-_cropDragStart.y;cropClamp();cropDraw();};
+    w.ontouchend=()=>{w.ontouchmove=null;};};
+}
+function confirmCrop(){
+  const out=document.createElement('canvas');out.width=CROP_W;out.height=CROP_H;
+  out.getContext('2d').drawImage(document.getElementById('cropCanvas'),0,0);
+  const d=out.toDataURL('image/jpeg',.92);pushHistory();ST[_cropTarget]=d;
+  if(_cropTarget==='photo')showPhoto(d);else if(_cropTarget==='logo')showLogo(d);else if(_cropTarget==='aboutPhoto')showAboutPhoto(d);
+  save();closeCrop();
+}
+function closeCrop(){document.getElementById('cropModal').classList.remove('open');const w=document.getElementById('cropWrap');w.onmousedown=w.onmousemove=w.onmouseup=null;}
+
+/* ════════════════════════════════
+   LOGO / PHOTO HANDLERS
+════════════════════════════════ */
+function handleLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{openCrop(ev.target.result,'logo','Ajustar logo');};r.readAsDataURL(f);}
+function showLogo(src){const i=document.getElementById('logoPreview');i.src=src;i.style.display='block';document.getElementById('logoPh').style.display='none';}
+function handlePhoto(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{openCrop(ev.target.result,'photo','Ajustar foto de perfil');};r.readAsDataURL(f);}
+function showPhoto(src){const i=document.getElementById('photoPreview');i.src=src;i.style.display='block';document.getElementById('photoPh').style.display='none';}
+function handleAboutPhoto(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{openCrop(ev.target.result,'aboutPhoto','Ajustar foto');};r.readAsDataURL(f);}
+function showAboutPhoto(src){const i=document.getElementById('aboutPhotoPreview');i.src=src;i.style.display='block';document.getElementById('aboutPhotoPh').style.display='none';}
+
+/* ════════════════════════════════
+   NAVIGATION
+════════════════════════════════ */
+function goTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('[data-sec]').forEach(n=>n.classList.toggle('active',n.dataset.sec===id));}
+
+/* ════════════════════════════════
+   PREVIEW
+════════════════════════════════ */
+let _pvDevice='desk',_pvBlobUrl=null;
+function setPreviewDevice(d){
+  _pvDevice=d;
+  document.getElementById('pvBtnDesk').classList.toggle('active',d==='desk');
+  document.getElementById('pvBtnMob').classList.toggle('active',d==='mob');
+  const f=document.getElementById('pvFrame');if(!f)return;
+  if(d==='mob'){f.style.width='390px';f.style.borderRadius='24px';}
+  else{f.style.width='100%';f.style.borderRadius='10px';}
+}
+function renderPreview(){
+  const f=document.getElementById('pvFrame');if(!f||!document.getElementById('pvModal').classList.contains('open'))return;
+  try{const h=buildExportHTML();if(_pvBlobUrl)URL.revokeObjectURL(_pvBlobUrl);_pvBlobUrl=URL.createObjectURL(new Blob([h],{type:'text/html'}));f.src=_pvBlobUrl;}catch(e){console.error('Preview:',e);}
+}
+function openPreview(){document.getElementById('pvModal').classList.add('open');setPreviewDevice(_pvDevice);renderPreview();}
+function closePreview(){document.getElementById('pvModal').classList.remove('open');}
+
+/* ════════════════════════════════
+   TEMPLATES
+════════════════════════════════ */
+const TEMPLATES=[
+  {id:'ortopedia',icon:'🦴',name:'Ortopedia & Traumato',sub:'Especialista em reabilitação ortopédica, pós-operatório e lesões musculoesqueléticas.',tags:['Ortopedia','Pós-op','Coluna'],color:'#00c896',heroStyle:'dark-gradient',
+   data:{brand:'Dr. [Seu Nome]',crefito:'CREFITO-0/00000-F',specialty:'Fisioterapeuta · Ortopedia e Traumatologia',heroTitle:'Recupere sua mobilidade e viva sem dor',heroSub:'Atendimento personalizado em consultório e domiciliar, com foco em reabilitação de lesões, pós-operatórios e dores crônicas musculoesqueléticas.',heroBtn:'Agendar avaliação',heroBtnLink:'#agendamento',heroBtn2:'Ver especialidades',heroBtn2Link:'#especialidades',specTitle:'Especialidades',specIntro:'Utilizo técnicas modernas baseadas em evidências para oferecer o melhor tratamento para cada caso.',specialties:[{icon:'🦴',title:'Pós-operatório',desc:'Reabilitação completa após cirurgias de joelho, ombro, coluna e quadril.'},{icon:'⚡',title:'Dor crônica',desc:'Protocolos específicos para dores persistentes em coluna, articulações e nervos.'},{icon:'🏃',title:'Lesões esportivas',desc:'Tratamento de entorses, estiramentos e lesões ligamentares com retorno seguro.'},{icon:'🔧',title:'Terapia manual',desc:'Mobilizações articulares, liberação miofascial e dry needling.'}],svcTitle:'Modalidades',svcSub:'Flexibilidade para atender você da melhor forma.',services:[{icon:'🏥',title:'Consultório',desc:'Ambiente com equipamentos profissionais para seu tratamento.'},{icon:'🏠',title:'Domiciliar',desc:'Atendimento na sua casa com toda estrutura necessária.'},{icon:'💻',title:'Teleconsulta',desc:'Orientação remota de exercícios e acompanhamento.'},{icon:'📋',title:'Avaliação postural',desc:'Análise detalhada e plano de correção personalizado.'}],aboutTitle:'Sobre mim',aboutText:'Fisioterapeuta com formação sólida e pós-graduação em Ortopedia e Traumatologia. Experiência em reabilitação pós-cirúrgica e tratamento de dores musculoesqueléticas.',aboutText2:'Meu compromisso é oferecer um atendimento humanizado e baseado em evidências, buscando sempre o melhor resultado funcional para cada paciente.',faqTitle:'Dúvidas frequentes',faqs:[{q:'Preciso de encaminhamento médico?',a:'Não. O fisioterapeuta tem autonomia para avaliar e tratar. Mas trabalhamos frequentemente em equipe com médicos.'},{q:'Quantas sessões vou precisar?',a:'Depende do quadro. Na primeira avaliação já traçamos um plano com previsão.'},{q:'Atendem convênio?',a:'Atendimento particular com emissão de nota para reembolso.'},{q:'Como é a primeira sessão?',a:'Uma avaliação completa com testes específicos, seguida do início do tratamento.'}],ctaTitle:'Comece sua recuperação',ctaSub:'Agende uma avaliação completa e descubra como posso te ajudar a viver sem dor.',ctaBtn:'Agendar avaliação',ctaNote:'Consultório e domiciliar · Sessão de 50 min a 1h'}},
+  {id:'esportiva',icon:'🏃',name:'Fisioterapia Esportiva',sub:'Retorno ao esporte seguro, prevenção de lesões e performance para atletas.',tags:['Esporte','Performance','Atletas'],color:'#3b82f6',heroStyle:'midnight',
+   data:{brand:'Dr. [Seu Nome]',crefito:'CREFITO-0/00000-F',specialty:'Fisioterapeuta Esportivo',heroTitle:'Performance sem limites, recuperação sem atalhos',heroSub:'Atendimento especializado para atletas amadores e profissionais, com protocolos de prevenção de lesões, reabilitação e otimização de performance.',heroBtn:'Agendar avaliação',heroBtnLink:'#agendamento',heroBtn2:'Meus tratamentos',heroBtn2Link:'#especialidades',specTitle:'Áreas de atuação',specIntro:'Combino ciência do esporte, biomecânica e reabilitação para levar você ao próximo nível.',specialties:[{icon:'🏃',title:'Retorno ao esporte',desc:'Protocolos progressivos com testes funcionais para voltar a competir com segurança.'},{icon:'🦵',title:'Lesões ligamentares',desc:'Reabilitação de LCA, LCP, menisco e outras lesões comuns no esporte.'},{icon:'📊',title:'Avaliação funcional',desc:'Testes de força, mobilidade e biomecânica para identificar pontos fracos.'},{icon:'🛡️',title:'Prevenção',desc:'Programas de prevenção de lesões baseados no seu esporte e histórico.'}],svcTitle:'Serviços',svcSub:'Do tratamento à performance.',services:[{icon:'🏋️',title:'Reabilitação esportiva',desc:'Protocolos específicos para cada esporte e tipo de lesão.'},{icon:'💪',title:'Treinamento preventivo',desc:'Exercícios corretivos e fortalecimento para evitar lesões recorrentes.'},{icon:'🏥',title:'Consultório',desc:'Ambiente equipado com plataformas, elásticos e equipamentos isocinéticos.'},{icon:'🏠',title:'Domiciliar/Campo',desc:'Atendimento em domicílio ou no local de treino.'}],aboutTitle:'Sobre mim',aboutText:'Fisioterapeuta esportivo com experiência em equipes e atletas individuais. Pós-graduado em Fisioterapia Esportiva e certificado em avaliação funcional.',aboutText2:'Minha missão é ajudar cada atleta a alcançar seu potencial máximo com saúde e longevidade esportiva.',faqTitle:'Perguntas comuns',faqs:[{q:'Preciso ser atleta profissional?',a:'Não! Atendo de corredores de fim de semana a atletas de elite.'},{q:'Quando posso voltar a treinar após lesão?',a:'Depende do tipo de lesão. Usamos critérios objetivos e testes funcionais para liberar o retorno com segurança.'},{q:'Você trabalha com quais esportes?',a:'Tenho experiência com corrida, futebol, tênis, crossfit, musculação e esportes de combate, entre outros.'}],ctaTitle:'Eleve sua performance',ctaSub:'Agende uma avaliação funcional e descubra como otimizar sua performance e prevenir lesões.',ctaBtn:'Agendar avaliação',ctaNote:'Consultório, domiciliar e campo · Sessões individualizadas'}},
+  {id:'geriatria',icon:'🧓',name:'Fisioterapia Geriátrica',sub:'Cuidado com equilíbrio, prevenção de quedas e qualidade de vida para idosos.',tags:['Idosos','Equilíbrio','Domiciliar'],color:'#10b981',heroStyle:'light-clean',
+   data:{brand:'Dr. [Seu Nome]',crefito:'CREFITO-0/00000-F',specialty:'Fisioterapeuta · Reabilitação Geriátrica',heroTitle:'Mais independência e qualidade de vida em cada fase',heroSub:'Atendimento especializado para idosos, com foco em manutenção funcional, prevenção de quedas e reabilitação no conforto do lar.',heroBtn:'Agendar avaliação',heroBtnLink:'#agendamento',heroBtn2:'Saiba mais',heroBtn2Link:'#especialidades',specTitle:'Como ajudo',specIntro:'Trabalho com protocolos adaptados para a terceira idade, respeitando limitações e potencializando capacidades.',specialties:[{icon:'🧘',title:'Equilíbrio e marcha',desc:'Exercícios para melhorar estabilidade e reduzir risco de quedas.'},{icon:'💪',title:'Fortalecimento',desc:'Programas de força adaptados para manter a independência funcional.'},{icon:'🧠',title:'Estimulação cognitiva',desc:'Atividades que integram corpo e mente para saúde cerebral.'},{icon:'🏠',title:'Adaptação do lar',desc:'Orientações para tornar a casa mais segura e acessível.'}],svcTitle:'Atendimentos',svcSub:'Modalidades pensadas para as necessidades da terceira idade.',services:[{icon:'🏠',title:'Domiciliar',desc:'Atendimento em casa — a modalidade preferida para idosos com dificuldade de locomoção.'},{icon:'🏥',title:'Consultório',desc:'Ambiente adaptado e acessível para atendimento presencial.'},{icon:'👨‍👩‍👦',title:'Orientação familiar',desc:'Instruções para cuidadores e familiares sobre exercícios e cuidados diários.'},{icon:'💻',title:'Teleconsulta',desc:'Acompanhamento remoto para manutenção de exercícios.'}],aboutTitle:'Sobre mim',aboutText:'Fisioterapeuta com especialização em Gerontologia. Experiência em reabilitação funcional de idosos, incluindo pós-quedas, pós-cirúrgico e doenças neurológicas.',aboutText2:'Acredito que envelhecer com qualidade é possível. Meu trabalho é garantir que cada paciente mantenha sua autonomia pelo maior tempo possível.',faqTitle:'Dúvidas frequentes',faqs:[{q:'A partir de que idade é indicado?',a:'Não há idade mínima. Geralmente atendo a partir de 60 anos, mas cada caso é avaliado individualmente.'},{q:'Meu familiar tem Alzheimer, é possível atender?',a:'Sim. Adapto o atendimento para pacientes com demência, sempre com orientação aos cuidadores.'},{q:'Como funciona o atendimento domiciliar?',a:'Levo todos os materiais necessários. Basta um espaço mínimo na casa do paciente.'}],ctaTitle:'Cuide de quem você ama',ctaSub:'Agende uma avaliação e comece a investir na qualidade de vida de quem mais importa.',ctaBtn:'Agendar avaliação',ctaNote:'Atendimento domiciliar e em consultório · Atendo região metropolitana'}},
+  {id:'pilates',icon:'🧘',name:'Pilates Clínico',sub:'Reabilitação com Pilates, fortalecimento do core e melhora postural.',tags:['Pilates','Postura','Core'],color:'#8b5cf6',heroStyle:'accent-dark',
+   data:{brand:'Dr. [Seu Nome]',crefito:'CREFITO-0/00000-F',specialty:'Fisioterapeuta · Pilates Clínico',heroTitle:'Pilates com base clínica: seu corpo em equilíbrio',heroSub:'Sessões individuais de Pilates clínico para reabilitação, fortalecimento e melhora postural, conduzidas por fisioterapeuta especializado.',heroBtn:'Agendar sessão',heroBtnLink:'#agendamento',heroBtn2:'Como funciona',heroBtn2Link:'#especialidades',specTitle:'Diferenciais',specIntro:'O Pilates clínico vai além do exercício: é uma ferramenta terapêutica precisa, adaptada ao seu corpo e às suas necessidades.',specialties:[{icon:'🎯',title:'Reabilitação com Pilates',desc:'Exercícios terapêuticos no solo e aparelhos para recuperação de lesões.'},{icon:'🧱',title:'Fortalecimento do core',desc:'Estabilização profunda para proteger sua coluna no dia a dia.'},{icon:'📐',title:'Correção postural',desc:'Reprogramação postural com consciência corporal e alinhamento.'},{icon:'🤰',title:'Gestantes',desc:'Pilates adaptado para cada trimestre, com segurança e conforto.'}],svcTitle:'Formatos de atendimento',svcSub:'Sessões adaptadas a cada perfil de paciente.',services:[{icon:'👤',title:'Individual',desc:'Atenção exclusiva com exercícios personalizados em aparelhos.'},{icon:'👥',title:'Dupla',desc:'Sessões para dois pacientes com programas individualizados.'},{icon:'🏥',title:'Consultório equipado',desc:'Reformer, Cadillac, Chair e Barrel para tratamento completo.'},{icon:'💻',title:'Online',desc:'Sessões de mat Pilates guiadas por videochamada.'}],aboutTitle:'Sobre mim',aboutText:'Fisioterapeuta com formação em Pilates clínico e estúdio próprio equipado com aparelhos profissionais. Atendo desde reabilitação até condicionamento.',aboutText2:'O Pilates clínico, quando conduzido por um fisioterapeuta, une o conhecimento terapêutico à prática do método — oferecendo resultados superiores.',faqTitle:'Perguntas frequentes',faqs:[{q:'Qual a diferença do Pilates clínico para o convencional?',a:'O Pilates clínico é conduzido por fisioterapeuta e focado em reabilitação e tratamento. Cada exercício é prescrito com base na avaliação fisioterapêutica.'},{q:'É indicado para quem tem hérnia de disco?',a:'Sim, em muitos casos o Pilates é excelente para hérnias. A avaliação inicial define quais exercícios são seguros.'},{q:'Preciso ter experiência com Pilates?',a:'Não. Começamos do zero, adaptando cada exercício ao seu nível.'}],ctaTitle:'Experimente uma sessão',ctaSub:'Agende sua avaliação e descubra como o Pilates clínico pode transformar sua relação com o movimento.',ctaBtn:'Agendar sessão',ctaNote:'Sessões individuais e dupla · Estúdio equipado'}},
+  {id:'dor-reab',icon:'💆',name:'Alívio de Dores e Reabilitação',sub:'Especialista em dores crônicas e agudas, reabilitação funcional com atendimento em consultório e domiciliar.',tags:['Dor','Reabilitação','Domiciliar','Consultório'],color:'#0ea5e9',heroStyle:'dark-gradient',
+   data:{brand:'Dr. [Seu Nome]',crefito:'CREFITO-0/00000-F',specialty:'Fisioterapeuta · Alívio de Dores e Reabilitação',heroTitle:'Viva sem dor. Recupere o prazer de se movimentar.',heroSub:'Sou fisioterapeuta especialista em alívio de dores e reabilitação funcional. Atendo em consultório equipado e também no conforto da sua casa, com planos de tratamento individualizados para cada paciente.',heroBtn:'Agendar avaliação',heroBtnLink:'#agendamento',heroBtn2:'Conheça os tratamentos',heroBtn2Link:'#especialidades',heroBadges:'CREFITO-0/00000-F · Consultório e domiciliar · Atendimento personalizado',specTitle:'Especialidades',specIntro:'Utilizo uma combinação de técnicas manuais, exercícios terapêuticos e recursos tecnológicos para tratar a causa da dor — não apenas os sintomas.',specialties:[{icon:'⚡',title:'Dores na coluna',desc:'Tratamento de lombalgias, cervicalgias, hérnias de disco e dores ciáticas com abordagem completa.'},{icon:'🦴',title:'Dores articulares',desc:'Alívio e reabilitação de dores em ombro, joelho, quadril e outras articulações.'},{icon:'🔧',title:'Terapia manual',desc:'Mobilizações, liberação miofascial, dry needling e técnicas de energia muscular.'},{icon:'🏃',title:'Reabilitação funcional',desc:'Recuperação da mobilidade e força para retorno seguro às atividades do dia a dia.'},{icon:'🩹',title:'Pós-operatório',desc:'Protocolos de reabilitação após cirurgias ortopédicas com acompanhamento próximo.'},{icon:'📋',title:'Avaliação postural',desc:'Análise completa da postura com orientações e exercícios corretivos personalizados.'}],svcTitle:'Modalidades de atendimento',svcSub:'Flexibilidade para atender você onde for mais confortável.',services:[{icon:'🏥',title:'Consultório',desc:'Ambiente equipado com aparelhos de eletroterapia, ultrassom e espaço para exercícios terapêuticos.'},{icon:'🏠',title:'Atendimento domiciliar',desc:'Levo o tratamento até você. Ideal para pós-operatórios, idosos e pacientes com mobilidade reduzida.'},{icon:'💻',title:'Teleconsulta',desc:'Acompanhamento e orientação de exercícios por videochamada para manutenção do tratamento.'},{icon:'🏋️',title:'Exercícios terapêuticos',desc:'Programas de exercícios personalizados para fortalecimento, flexibilidade e prevenção de recidivas.'}],aboutTitle:'Sobre mim',aboutText:'Sou fisioterapeuta com foco em alívio de dores musculoesqueléticas e reabilitação funcional. Minha formação inclui pós-graduação em Ortopedia e Traumatologia, e atuo há mais de 10 anos devolvendo qualidade de vida aos meus pacientes.',aboutText2:'Acredito que cada dor tem uma causa — e cada paciente merece um plano de tratamento único. Combino terapia manual, exercícios terapêuticos e educação em saúde para resultados que realmente duram.',stat1Num:'10+',stat1Lbl:'anos de experiência',stat2Num:'2.000+',stat2Lbl:'pacientes atendidos',stat3Num:'100%',stat3Lbl:'comprometimento ético',faqTitle:'Dúvidas frequentes',faqs:[{q:'Preciso de encaminhamento médico para fazer fisioterapia?',a:'Não. O fisioterapeuta possui autonomia para avaliar, diagnosticar funcionalmente e tratar. Em muitos casos, trabalhamos em conjunto com médicos ortopedistas e outros especialistas.'},{q:'Quantas sessões vou precisar para melhorar?',a:'Depende do quadro clínico. Na avaliação inicial, traçamos um plano com previsão de evolução. Quadros agudos costumam melhorar mais rápido, enquanto dores crônicas podem exigir um acompanhamento mais longo.'},{q:'Como funciona o atendimento domiciliar?',a:'Levo todos os equipamentos necessários até você. Basta um espaço mínimo como uma sala ou quarto. Atendo na região metropolitana — entre em contato para verificar disponibilidade.'},{q:'Vocês atendem convênio?',a:'Atendo particular e emito nota fiscal para reembolso em planos de saúde. Consulte as condições para o seu convênio.'},{q:'Qual a duração de uma sessão?',a:'As sessões duram entre 50 minutos e 1 hora, incluindo avaliação, tratamento e orientações de exercícios para casa.'}],ctaTitle:'Comece sua recuperação hoje',ctaSub:'O primeiro passo é uma avaliação completa. Vamos identificar a causa da sua dor e montar um plano de tratamento personalizado para você.',ctaBtn:'Agendar avaliação',ctaNote:'Atendimento em consultório e domiciliar · Sessões de 50 min a 1h'}},
+  {id:'dor-reab-2',icon:'🩻',name:'Dor e Reabilitação · Completo',sub:'Copy profissional para fisioterapeuta especialista em alívio de dores com atendimento em consultório e domiciliar.',tags:['Dor crônica','Coluna','Consultório','Domiciliar'],color:'#14b8a6',heroStyle:'midnight',
+   data:{brand:'Dr. [Seu Nome]',crefito:'CREFITO-0/00000-F',specialty:'Fisioterapeuta · Especialista em Alívio de Dores e Reabilitação',heroTitle:'Sua dor tem tratamento. Sua mobilidade tem solução.',heroSub:'Fisioterapeuta especialista em dores musculoesqueléticas e reabilitação funcional. Atendimento individualizado em consultório e domiciliar para você voltar a fazer o que a dor te impede.',heroBtn:'Quero agendar minha avaliação',heroBtnLink:'#agendamento',heroBtn2:'Ver como funciona',heroBtn2Link:'#especialidades',heroBadges:'CREFITO-0/00000-F · Consultório e domiciliar · Mais de 10 anos de experiência',specTitle:'O que eu trato',specIntro:'Cada dor tem uma origem. Meu trabalho é encontrar essa origem e tratá-la com as técnicas mais eficazes da fisioterapia moderna — sem depender apenas de medicamentos.',specialties:[{icon:'🔴',title:'Dores na coluna',desc:'Lombalgia, cervicalgia, hérnia de disco, dor ciática. Tratamento manual e exercícios para aliviar a dor e evitar que ela volte.'},{icon:'🦵',title:'Dores no joelho',desc:'Condromalácia, artrose, lesões meniscais e ligamentares. Reabilitação completa para recuperar estabilidade e confiança.'},{icon:'💪',title:'Dores no ombro',desc:'Tendinite, bursite, síndrome do impacto e pós-operatório. Protocolo personalizado para recuperar amplitude e força.'},{icon:'🧠',title:'Dores crônicas',desc:'Fibromialgia, dores persistentes e quadros complexos. Abordagem multifatorial com educação em dor e exercícios graduais.'},{icon:'🩹',title:'Reabilitação pós-cirúrgica',desc:'Protocolos de recuperação após cirurgias de coluna, joelho, ombro e quadril. Acompanhamento desde o primeiro dia.'},{icon:'📐',title:'Correção postural',desc:'Avaliação postural completa com plano de exercícios para corrigir desequilíbrios e prevenir novas dores.'}],svcTitle:'Onde e como atendo',svcSub:'Duas modalidades de atendimento para se adaptar à sua rotina e necessidade.',services:[{icon:'🏥',title:'No consultório',desc:'Ambiente completo com maca, aparelhos de eletroterapia, ultrassom terapêutico e espaço para exercícios. Tudo o que seu tratamento precisa em um só lugar.'},{icon:'🏠',title:'Na sua casa',desc:'Atendimento domiciliar com equipamentos portáteis profissionais. Ideal para quem tem dificuldade de locomoção, está em pós-operatório ou prefere a praticidade de ser atendido em casa.'},{icon:'📝',title:'Avaliação completa',desc:'Toda primeira sessão inclui avaliação funcional detalhada: testes de mobilidade, força, postura e identificação da causa da dor. Você sai com um plano claro.'},{icon:'🔄',title:'Acompanhamento contínuo',desc:'Reavaliações periódicas para medir sua evolução e ajustar o plano de tratamento. Você acompanha cada progresso.'}],aboutTitle:'Quem sou eu',aboutText:'Sou fisioterapeuta há mais de 10 anos, especializado em dores musculoesqueléticas e reabilitação funcional. Minha formação inclui pós-graduação em Ortopedia e Traumatologia e atualização constante em terapia manual, exercícios terapêuticos e tratamento de dor crônica.',aboutText2:'Meu compromisso é simples: entender a causa da sua dor e criar um plano de tratamento que funcione para a sua realidade. Sem fórmulas prontas. Cada paciente recebe atenção exclusiva, com técnicas combinadas para o melhor resultado possível.',stat1Num:'10+',stat1Lbl:'anos tratando dor',stat2Num:'2.500+',stat2Lbl:'pacientes atendidos',stat3Num:'98%',stat3Lbl:'de satisfação',faqTitle:'Perguntas que recebo com frequência',faqs:[{q:'Preciso de pedido médico para iniciar a fisioterapia?',a:'Não. O fisioterapeuta é um profissional de primeiro contato — ou seja, você pode procurar diretamente sem encaminhamento. Se necessário, eu mesmo indico o médico especialista para exames complementares.'},{q:'Em quantas sessões vou sentir melhora?',a:'Cada caso é único. Em quadros agudos, é comum sentir alívio já nas primeiras sessões. Dores crônicas costumam exigir um plano mais longo, mas na avaliação inicial já traço uma previsão realista de evolução.'},{q:'Qual a diferença entre o atendimento no consultório e o domiciliar?',a:'No consultório, tenho acesso a todos os equipamentos fixos (aparelhos de eletroterapia, ultrassom, etc). No domiciliar, levo equipamentos portáteis profissionais e foco mais em terapia manual e exercícios. Ambos são igualmente eficazes — escolha o que funciona melhor para você.'},{q:'Vocês aceitam convênio?',a:'O atendimento é particular. Emito nota fiscal para que você solicite reembolso ao seu plano de saúde, caso ele ofereça essa opção.'},{q:'Quanto tempo dura cada sessão?',a:'Entre 50 minutos e 1 hora. Esse tempo inclui a reavaliação do dia, o tratamento manual, os exercícios e as orientações para casa.'},{q:'Preciso fazer exercícios em casa entre as sessões?',a:'Sim, e isso faz toda a diferença. Prescrevo exercícios simples e específicos para o seu caso, que ajudam a manter os ganhos da sessão e acelerar sua recuperação.'}],ctaTitle:'O primeiro passo é uma avaliação',ctaSub:'Na avaliação, vou identificar exatamente o que está causando sua dor e explicar, de forma clara, qual o melhor caminho de tratamento. Sem compromisso — você decide se quer seguir.',ctaBtn:'Agendar minha avaliação',ctaNote:'Consultório e domiciliar · Sessão individual de 50 min a 1h'}},
+  {id:'leonardo-caxias',icon:'🎯',name:'Leonardo · Caxias do Sul',sub:'Fisioterapeuta em Caxias do Sul. Dor nas costas, ombro, joelho. Consultório e domiciliar. Copy otimizado para SEO local.',tags:['Caxias do Sul','Dor','Domiciliar','SEO Local'],color:'#14b8a6',heroStyle:'midnight',
+   data:{brand:'Leonardo Oliveira',crefito:'CREFITO-5/000000-F',specialty:'Fisioterapeuta · Alívio de Dores e Reabilitação',heroTitle:'Chega de conviver com a dor. Recupere seus movimentos.',heroSub:'Fisioterapeuta em Caxias do Sul com atendimento em consultório e domiciliar. Tratamento individualizado para dores nas costas, ombro, joelho e tensões musculares — focado na causa, não só no sintoma.',heroBtn:'Agendar avaliação pelo WhatsApp',heroBtnLink:'#agendamento',heroBtn2:'Como funciona o tratamento',heroBtn2Link:'#especialidades',heroBadges:'CREFITO-5/000000-F · Caxias do Sul · Consultório e domiciliar',specTitle:'O que eu trato',specIntro:'Atendo as queixas mais comuns do dia a dia com uma abordagem que investiga a causa real da sua dor — e não apenas mascara os sintomas.',specialties:[{icon:'🔴',title:'Dor nas costas e lombar',desc:'Lombalgia, travamento, hérnia de disco e dor ciática. Tratamento com terapia manual e exercícios para alívio rápido e prevenção de recidivas.'},{icon:'💪',title:'Dor no ombro',desc:'Tendinite, bursite, síndrome do impacto e limitação de movimento. Recuperação da amplitude e força com protocolo individualizado.'},{icon:'🦵',title:'Dor no joelho',desc:'Condromalácia, artrose, lesões ligamentares e meniscais. Reabilitação para estabilidade, confiança e retorno às atividades.'},{icon:'😣',title:'Tensão muscular e estresse',desc:'Dores no pescoço, trapézio e ombros por má postura ou estresse. Liberação miofascial e orientações posturais para alívio duradouro.'},{icon:'🏋️',title:'Desconforto pós-treino',desc:'Dores musculares, sobrecarga articular e lesões de academia. Recovery com bota pneumática, laser terapêutico e exercícios corretivos.'},{icon:'🚶',title:'Dificuldade de movimentos',desc:'Rigidez ao levantar, subir escadas ou realizar atividades do dia a dia. Mobilizações articulares e fortalecimento funcional progressivo.'}],svcTitle:'Onde e como atendo',svcSub:'Duas modalidades para se adaptar à sua rotina — com a mesma qualidade e atenção.',services:[{icon:'🏥',title:'No consultório em Caxias do Sul',desc:'Estrutura completa: laser terapêutico, bota de compressão pneumática (Recovery), espaço para exercícios e equipamentos de terapia manual.'},{icon:'🏠',title:'Na sua casa (domiciliar)',desc:'Ideal para pós-cirúrgico, idosos ou quem prefere o conforto de casa. Levo equipamentos portáteis e monto o plano de tratamento no seu ambiente.'},{icon:'📋',title:'Avaliação individualizada',desc:'Toda primeira sessão começa com avaliação detalhada: histórico, sintomas, testes de movimento e definição do plano de tratamento personalizado.'},{icon:'📈',title:'Acompanhamento da evolução',desc:'Reavaliações periódicas para medir seu progresso, ajustar o plano e garantir que você alcance seus objetivos com clareza.'}],aboutTitle:'Quem sou eu',aboutText:'Sou Leonardo Oliveira, fisioterapeuta em Caxias do Sul. Meu trabalho é ajudar pessoas que convivem com dores no dia a dia — nas costas, no ombro, no joelho, tensões musculares — a recuperar a liberdade de se movimentar sem desconforto.',aboutText2:'Trabalho com terapia manual, exercícios terapêuticos, liberação miofascial, mobilizações articulares, laser terapêutico e bota de compressão pneumática. Cada paciente recebe um plano exclusivo, porque acredito que tratar a causa é mais importante do que tratar o sintoma.',stat1Num:'—',stat1Lbl:'anos de experiência',stat2Num:'—',stat2Lbl:'pacientes atendidos',stat3Num:'100%',stat3Lbl:'foco individualizado',faqTitle:'Dúvidas frequentes',faqs:[{q:'Preciso de pedido médico para fazer fisioterapia?',a:'Não. O fisioterapeuta tem autonomia para avaliar e tratar. Você pode agendar diretamente pelo WhatsApp. Se necessário, eu indico o médico para exames complementares.'},{q:'Como funciona a primeira sessão?',a:'Começo com uma avaliação detalhada: escuto seu histórico, analiso seus sintomas, faço testes de movimento e defino um plano de tratamento claro e individualizado. Já iniciamos o tratamento no mesmo dia.'},{q:'Quantas sessões vou precisar?',a:'Depende do quadro. Na avaliação já traço uma previsão realista. Dores agudas costumam melhorar em poucas sessões. Quadros crônicos exigem acompanhamento mais longo, mas você vai perceber a evolução desde o início.'},{q:'Qual a diferença entre consultório e domiciliar?',a:'No consultório em Caxias do Sul, tenho estrutura completa (laser, bota pneumática, equipamentos). No domiciliar, levo equipamentos portáteis e foco em terapia manual e exercícios. Ambos são eficazes — escolha o que funciona melhor para você.'},{q:'O que é a bota de compressão pneumática (Recovery)?',a:'É um equipamento que faz compressão intermitente nas pernas, acelerando a recuperação muscular, reduzindo inchaço e melhorando a circulação. Muito usada por atletas e excelente para pós-treino e pós-cirúrgico.'},{q:'Vocês aceitam convênio?',a:'O atendimento é particular. Emito nota fiscal para que você solicite reembolso ao seu plano de saúde, se ele oferecer essa opção.'}],ctaTitle:'O primeiro passo é uma avaliação',ctaSub:'Me conta o que você está sentindo. Na avaliação, vou identificar a causa da sua dor e te explicar exatamente o que podemos fazer. Sem compromisso — você decide se quer seguir.',ctaBtn:'Agendar pelo WhatsApp',ctaNote:'Atendimento em consultório e domiciliar em Caxias do Sul · Sessão individual de 50 min a 1h'}},
+  {id:'leo-dores-seo',icon:'🔍',name:'Léo · Dores Específicas (SEO)',sub:'Copy focado nas dores mais buscadas no Google: costas, ombro, joelho. Otimizado para capturar buscas locais em Caxias do Sul.',tags:['SEO','Dor nas costas','Dor no ombro','Dor no joelho'],color:'#0ea5e9',heroStyle:'dark-gradient',
+   data:{brand:'Leonardo Oliveira',crefito:'CREFITO-5/000000-F',specialty:'Fisioterapeuta em Caxias do Sul',heroTitle:'Dor nas costas, no ombro ou no joelho? A fisioterapia pode resolver.',heroSub:'Leonardo Oliveira, fisioterapeuta em Caxias do Sul. Tratamento especializado para dor lombar, dor no ombro e dor no joelho com avaliação individualizada, terapia manual e exercícios terapêuticos. Consultório e atendimento domiciliar.',heroBtn:'Agendar avaliação pelo WhatsApp',heroBtnLink:'#agendamento',heroBtn2:'Veja o que eu trato',heroBtn2Link:'#especialidades',heroBadges:'Fisioterapeuta · Caxias do Sul, RS · Consultório e domiciliar',specTitle:'Problemas tratados com fisioterapia',specIntro:'A fisioterapia pode ajudar quando a dor ou a limitação de movimento começa a atrapalhar sua rotina. Conheça as queixas mais comuns que trato no consultório e em domicílio em Caxias do Sul.',specialties:[{icon:'🔴',title:'Dor nas costas em Caxias do Sul',desc:'Dor lombar, travamento, hérnia de disco, dor ciática. A dor nas costas é a queixa mais comum no consultório. O tratamento combina terapia manual, mobilizações e exercícios de fortalecimento para aliviar a dor e evitar que ela volte.'},{icon:'💪',title:'Dor no ombro — tratamento fisioterapia',desc:'Tendinite, bursite, síndrome do impacto, dor ao levantar o braço. A fisioterapia trabalha a recuperação da amplitude de movimento e da força, com protocolo adaptado ao seu caso.'},{icon:'🦵',title:'Dor no joelho — fisioterapia em Caxias',desc:'Condromalácia, artrose, dor ao subir escadas ou caminhar, lesões ligamentares e meniscais. Reabilitação com foco em estabilidade, fortalecimento e retorno seguro às atividades.'},{icon:'😣',title:'Tensão muscular e dor no pescoço',desc:'Dor no trapézio, rigidez cervical, dores por má postura e estresse. Liberação miofascial, mobilizações articulares e orientações posturais para alívio que dura.'},{icon:'🏋️',title:'Fisioterapia esportiva em Caxias do Sul',desc:'Dores pós-treino, sobrecarga articular, lesões de academia e esporte. Recuperação com bota pneumática (Recovery), laser terapêutico e exercícios corretivos.'},{icon:'🩹',title:'Recuperação pós-cirúrgica ortopédica',desc:'Reabilitação após cirurgias de coluna, joelho, ombro e quadril. Protocolo progressivo com acompanhamento desde o primeiro dia de pós-operatório.'}],svcTitle:'Modalidades de atendimento em Caxias do Sul',svcSub:'Atendimento fisioterapêutico em consultório e domiciliar, adaptado à sua necessidade.',services:[{icon:'🏥',title:'Fisioterapia em consultório',desc:'Atendimento em Caxias do Sul com laser terapêutico, bota de compressão pneumática, equipamentos de terapia manual e espaço para exercícios terapêuticos.'},{icon:'🏠',title:'Fisioterapia domiciliar em Caxias do Sul',desc:'Atendimento na sua casa com equipamentos portáteis. Indicado para pessoas com dificuldade de locomoção, pós-cirúrgico, idosos ou quem prefere o conforto de casa.'},{icon:'📋',title:'Avaliação fisioterapêutica completa',desc:'Primeira sessão com investigação do histórico, análise dos sintomas, testes de movimento e definição do plano de tratamento individualizado.'},{icon:'📈',title:'Acompanhamento e reavaliação',desc:'Monitoramento da evolução com reavaliações periódicas. Ajuste do plano conforme sua resposta ao tratamento.'}],aboutTitle:'Sobre o fisioterapeuta',aboutText:'Leonardo Oliveira é fisioterapeuta em Caxias do Sul, atuando no cuidado e na recuperação do movimento humano. Seu trabalho é voltado para compreender a origem das dores e limitações que afetam a rotina das pessoas, desenvolvendo tratamentos adaptados à realidade de cada paciente.',aboutText2:'A fisioterapia é conduzida de forma individualizada, respeitando o tempo de recuperação do corpo e utilizando técnicas como terapia manual, exercícios terapêuticos, liberação miofascial, mobilizações articulares, laser terapêutico e bota de compressão pneumática.',stat1Num:'—',stat1Lbl:'anos de experiência',stat2Num:'—',stat2Lbl:'pacientes atendidos',stat3Num:'100%',stat3Lbl:'atendimento individualizado',faqTitle:'Perguntas frequentes sobre fisioterapia',faqs:[{q:'Quando devo procurar fisioterapia?',a:'Quando a dor ou a limitação de movimento começa a interferir nas suas atividades do dia a dia ou persiste por vários dias. Quanto antes iniciar, mais rápida costuma ser a recuperação.'},{q:'A fisioterapia pode ajudar na dor nas costas?',a:'Sim. A fisioterapia auxilia na melhora da mobilidade, no fortalecimento muscular e na redução das sobrecargas que contribuem para a dor lombar e nas costas.'},{q:'Quantas sessões de fisioterapia são necessárias?',a:'A quantidade varia conforme a avaliação e a evolução. Na primeira sessão, já traço uma previsão baseada no seu quadro.'},{q:'Preciso de encaminhamento médico?',a:'Não. O fisioterapeuta tem autonomia para avaliar e tratar. Você pode agendar diretamente pelo WhatsApp.'},{q:'Como funciona a fisioterapia domiciliar?',a:'Levo os equipamentos portáteis necessários até a sua casa em Caxias do Sul. Ideal para quem tem dificuldade de locomoção ou está em pós-operatório.'},{q:'Quais técnicas são utilizadas no tratamento?',a:'Dependendo do caso: terapia manual, exercícios terapêuticos, liberação miofascial, mobilizações articulares, laser terapêutico e bota de compressão pneumática (Recovery).'}],ctaTitle:'Agende sua avaliação fisioterapêutica',ctaSub:'Se você convive com dor nas costas, dor no ombro, dor no joelho ou limitação de movimento, agende uma avaliação. O atendimento é realizado por Leonardo Oliveira, fisioterapeuta, em Caxias do Sul.',ctaBtn:'Entrar em contato pelo WhatsApp',ctaNote:'Fisioterapia em Caxias do Sul · Consultório e domiciliar · Avaliação individualizada'}},
+  {id:'leo-empatia',icon:'💚',name:'Léo · Tom Empático',sub:'Copy que gera identificação imediata. Foco na dor do paciente, linguagem acolhedora e tom próximo.',tags:['Empático','Conexão','Confiança','WhatsApp'],color:'#10b981',heroStyle:'midnight',
+   data:{brand:'Leonardo Oliveira',crefito:'CREFITO-5/000000-F',specialty:'Fisioterapeuta · Caxias do Sul',heroTitle:'Eu sei como é conviver com dor. E sei como te ajudar a sair dela.',heroSub:'Você já acordou travado? Já deixou de fazer algo que gosta por causa da dor? Muitos dos meus pacientes chegam assim. Meu trabalho como fisioterapeuta é entender o que está causando isso e criar um caminho real de recuperação — com calma, com atenção e com um plano feito só pra você.',heroBtn:'Falar comigo pelo WhatsApp',heroBtnLink:'#agendamento',heroBtn2:'Entenda como funciona',heroBtn2Link:'#especialidades',heroBadges:'Fisioterapeuta em Caxias do Sul · Atendimento humanizado · Consultório e domiciliar',specTitle:'Você se reconhece em alguma dessas situações?',specIntro:'Muitas pessoas procuram fisioterapia quando a dor começa a atrapalhar a rotina. Se você se identifica com algo abaixo, eu posso ajudar.',specialties:[{icon:'😔',title:'Acordar com dor nas costas',desc:'Aquela dor lombar que já faz parte do seu dia, que trava ao levantar da cama ou piora ao ficar sentado muito tempo. Não precisa ser assim.'},{icon:'😤',title:'Não conseguir levantar o braço direito',desc:'Dor no ombro que aparece ao vestir uma camiseta, pegar algo no alto ou dormir de lado. A fisioterapia pode devolver esse movimento.'},{icon:'😟',title:'Joelho que dói ao subir escada',desc:'Aquela pontada no joelho que faz você pensar duas vezes antes de subir ou descer escadas. Tem tratamento e não precisa de cirurgia na maioria dos casos.'},{icon:'😩',title:'Pescoço e ombros sempre tensos',desc:'Vive com dor no trapézio? Sente o pescoço duro no fim do dia? A tensão muscular crônica tem causa — e tem solução.'},{icon:'💢',title:'Dor depois do treino que não passa',desc:'Tudo bem sentir dor muscular. Mas quando ela não vai embora ou vem junto com desconforto articular, é hora de investigar.'},{icon:'😞',title:'Corpo rígido, movimentos limitados',desc:'Levantar do sofá, amarrar o sapato, virar o pescoço. Quando o corpo vai perdendo movimento aos poucos, a fisioterapia ajuda a recuperar.'}],svcTitle:'Como vai funcionar o seu tratamento',svcSub:'Sem pressa, sem fórmula pronta. Cada etapa é pensada pra você.',services:[{icon:'🤝',title:'Primeiro, eu te escuto',desc:'Na avaliação, quero entender sua rotina, seu histórico, o que dói e quando dói. Faço testes de movimento pra encontrar a causa real — não só onde dói, mas por que dói.'},{icon:'📝',title:'Depois, monto seu plano',desc:'Com base na avaliação, defino quais técnicas vão funcionar melhor pra você: terapia manual, exercícios, laser, mobilizações. Tudo explicado de forma clara.'},{icon:'🏥',title:'Sessões no consultório',desc:'Ambiente completo em Caxias do Sul com laser terapêutico, bota pneumática Recovery, maca e espaço para exercícios. Tudo que seu tratamento precisa.'},{icon:'🏠',title:'Ou sessões na sua casa',desc:'Se você prefere ser atendido em casa — ou precisa, no caso de pós-cirúrgico ou dificuldade de locomoção — eu vou até você com tudo que é necessário.'}],aboutTitle:'Quem está do outro lado',aboutText:'Meu nome é Leonardo Oliveira. Sou fisioterapeuta em Caxias do Sul e escolhi essa profissão porque acredito que ninguém deveria aceitar a dor como parte da vida. Trabalho todos os dias pra ajudar pessoas a recuperar o que a dor tirou: movimento, disposição, liberdade.',aboutText2:'Uso terapia manual, exercícios terapêuticos, liberação miofascial, mobilizações articulares, laser e bota de compressão pneumática. Mas mais do que técnicas, o que meus pacientes dizem que faz diferença é a atenção. Cada pessoa recebe um plano pensado exclusivamente pra ela.',stat1Num:'—',stat1Lbl:'anos cuidando de pessoas',stat2Num:'—',stat2Lbl:'pacientes atendidos',stat3Num:'100%',stat3Lbl:'atenção individualizada',faqTitle:'Dúvidas que eu sempre recebo',faqs:[{q:'Eu preciso de encaminhamento médico?',a:'Não precisa. O fisioterapeuta pode te avaliar e tratar diretamente. É só me chamar no WhatsApp que a gente conversa.'},{q:'Como é a primeira sessão?',a:'Começo ouvindo você. Depois faço testes de movimento, analiso sua postura e já defino o plano de tratamento. Na maioria dos casos, já iniciamos o tratamento no mesmo dia.'},{q:'E se eu já tentei fisioterapia antes e não funcionou?',a:'Isso é mais comum do que parece. Cada profissional tem uma abordagem. No meu caso, foco em encontrar a causa da dor — não só tratar o sintoma. Muitos pacientes que não tiveram resultado antes melhoram aqui.'},{q:'Quanto tempo até eu sentir diferença?',a:'Dores agudas costumam melhorar nas primeiras sessões. Quadros crônicos levam mais tempo, mas você vai perceber a evolução a cada semana.'},{q:'Você atende em casa?',a:'Sim. Faço atendimento domiciliar em Caxias do Sul. Levo tudo que preciso — equipamentos portáteis, materiais de exercício. Basta ter um espaço mínimo.'},{q:'Aceita convênio?',a:'O atendimento é particular. Emito nota fiscal pra você pedir reembolso ao plano, se ele oferecer.'}],ctaTitle:'Vamos conversar sobre o que você está sentindo?',ctaSub:'Não precisa ter certeza do que é. Me conta seus sintomas pelo WhatsApp e eu te explico se a fisioterapia pode ajudar e como seria o tratamento. Sem compromisso.',ctaBtn:'Falar com o Leonardo pelo WhatsApp',ctaNote:'Atendimento em Caxias do Sul · Consultório e domiciliar · Respondo rápido'}},
+  {id:'leo-processo',icon:'⚙️',name:'Léo · Processo e Técnicas',sub:'Copy focado no processo de tratamento, nas técnicas utilizadas e nos diferenciais do atendimento. Tom profissional e técnico acessível.',tags:['Processo','Técnicas','Diferenciais','Profissional'],color:'#3b82f6',heroStyle:'dark-solid',
+   data:{brand:'Leonardo Oliveira',crefito:'CREFITO-5/000000-F',specialty:'Fisioterapeuta · Caxias do Sul',heroTitle:'Fisioterapia em Caxias do Sul para recuperar movimento e reduzir dores do dia a dia',heroSub:'Atendimento realizado por Leonardo Oliveira, fisioterapeuta, com avaliação individualizada e sessões focadas na recuperação da mobilidade, no cuidado com o corpo e na melhora da qualidade de vida. Consultório e domiciliar em Caxias do Sul.',heroBtn:'Agendar avaliação pelo WhatsApp',heroBtnLink:'#agendamento',heroBtn2:'Ver como funciona',heroBtn2Link:'#especialidades',heroBadges:'CREFITO-5/000000-F · Caxias do Sul · Avaliação individualizada',specTitle:'Recursos utilizados na fisioterapia',specIntro:'Dependendo da necessidade de cada paciente, diferentes técnicas são combinadas durante o tratamento para oferecer o melhor resultado possível.',specialties:[{icon:'🤲',title:'Terapia manual',desc:'Técnicas manuais aplicadas diretamente sobre a região afetada para reduzir a dor, restaurar o movimento articular e relaxar a musculatura.'},{icon:'💪',title:'Exercícios terapêuticos e fortalecimento',desc:'Programas de exercícios prescritos individualmente para fortalecer a musculatura, melhorar a estabilidade e prevenir recidivas.'},{icon:'🔄',title:'Liberação miofascial',desc:'Técnica que trabalha as fáscias musculares para aliviar tensões profundas, melhorar a circulação local e reduzir dores crônicas.'},{icon:'🦴',title:'Mobilizações articulares',desc:'Movimentos específicos aplicados nas articulações para restaurar a amplitude de movimento e reduzir rigidez e dor.'},{icon:'💡',title:'Laser terapêutico',desc:'Recurso que utiliza luz de baixa intensidade para acelerar a cicatrização, reduzir inflamação e aliviar a dor de forma não invasiva.'},{icon:'🦿',title:'Bota de compressão pneumática (Recovery)',desc:'Equipamento que realiza compressão intermitente para acelerar a recuperação muscular, reduzir inchaço e melhorar a circulação. Indicada para pós-treino e pós-cirúrgico.'}],svcTitle:'Como funciona o processo de fisioterapia',svcSub:'Um tratamento estruturado em etapas claras, do início ao resultado.',services:[{icon:'1️⃣',title:'Avaliação inicial detalhada',desc:'O atendimento começa com uma avaliação para compreender o histórico do paciente, os sintomas, os movimentos que geram dor e as limitações funcionais.'},{icon:'2️⃣',title:'Plano de tratamento individualizado',desc:'Após a avaliação, é definido um plano adaptado às necessidades e aos objetivos do paciente, com técnicas e frequência personalizadas.'},{icon:'3️⃣',title:'Sessões focadas em resultado',desc:'Cada sessão trabalha a mobilidade, a redução de tensões e a recuperação funcional, utilizando as técnicas mais adequadas para o caso.'},{icon:'4️⃣',title:'Reavaliação e orientações',desc:'A evolução é monitorada com reavaliações periódicas. O paciente também recebe orientações posturais e de movimento para prevenir novas sobrecargas.'}],aboutTitle:'Sobre Leonardo Oliveira',aboutText:'Leonardo Oliveira é fisioterapeuta em Caxias do Sul, atuando no cuidado e na recuperação do movimento humano. Seu trabalho é voltado para compreender a origem das dores e limitações que afetam a rotina das pessoas, buscando desenvolver tratamentos adaptados à realidade de cada paciente.',aboutText2:'O atendimento é realizado de forma individualizada, respeitando o tempo de recuperação do corpo. Os diferenciais incluem: avaliação personalizada, foco na causa do problema (não apenas no sintoma), acompanhamento da evolução, variedade de técnicas terapêuticas e orientações preventivas para evitar recidivas.',stat1Num:'—',stat1Lbl:'anos de experiência',stat2Num:'—',stat2Lbl:'pacientes atendidos',stat3Num:'100%',stat3Lbl:'tratamento individualizado',faqTitle:'Perguntas frequentes',faqs:[{q:'Quando devo procurar fisioterapia?',a:'Quando a dor ou a limitação de movimento começa a interferir nas atividades do dia a dia ou persiste por vários dias. O quanto antes iniciar, mais rápida costuma ser a recuperação.'},{q:'A fisioterapia pode ajudar na dor nas costas?',a:'Sim. A fisioterapia auxilia na melhora da mobilidade, no fortalecimento muscular e na redução de sobrecargas que contribuem para a dor lombar e nas costas.'},{q:'Quantas sessões de fisioterapia são necessárias?',a:'A quantidade de sessões varia conforme a avaliação e a evolução de cada paciente. Na primeira sessão, já é possível ter uma previsão.'},{q:'O atendimento domiciliar é igual ao de consultório?',a:'Sim, em termos de qualidade e atenção. No consultório há acesso a equipamentos como laser e bota pneumática. No domiciliar, o foco é em terapia manual e exercícios com equipamentos portáteis.'},{q:'Quais são os diferenciais do atendimento?',a:'Avaliação individualizada, foco na causa do problema, acompanhamento da evolução, uso de técnicas variadas (terapia manual, laser, bota pneumática) e orientações preventivas.'},{q:'Como faço para agendar?',a:'É só entrar em contato pelo WhatsApp. Respondo rápido e agendamos o melhor horário para você.'}],ctaTitle:'Agendamento de fisioterapia em Caxias do Sul',ctaSub:'Se você busca acompanhamento fisioterapêutico para dor, limitação de movimento ou recuperação funcional, agende uma avaliação com Leonardo Oliveira, fisioterapeuta em Caxias do Sul.',ctaBtn:'Entrar em contato pelo WhatsApp',ctaNote:'Consultório e domiciliar em Caxias do Sul · Avaliação individualizada'}},
+];
+
+function openTemplates(){
+  const grid=document.getElementById('tplGrid');
+  grid.innerHTML=TEMPLATES.map(t=>'<div class="tpl-card" data-tpl="'+t.id+'"><div class="tpl-card-top"><div class="tpl-icon">'+t.icon+'</div><div class="tpl-name">'+t.name+'</div></div><div class="tpl-sub">'+t.sub+'</div><div class="tpl-tags">'+t.tags.map(tag=>'<span class="tpl-tag">'+tag+'</span>').join('')+'</div></div>').join('');
+  grid.onclick=e=>{const c=e.target.closest('.tpl-card');if(c&&c.dataset.tpl)applyTemplate(c.dataset.tpl);};
+  document.getElementById('tplModal').classList.add('open');
+}
+function closeTemplates(){document.getElementById('tplModal').classList.remove('open');}
+function applyTemplate(id){
+  const tpl=TEMPLATES.find(t=>t.id===id);if(!tpl)return;
+  if(!confirm('Carregar "'+tpl.name+'"?\n\nSubstituirá textos. Fotos e cores mantidas.'))return;
+  pushHistory();syncUndoButtons();
+  const pres={logo:ST.logo,photo:ST.photo,aboutPhoto:ST.aboutPhoto,color:ST.color,heroStyle:tpl.heroStyle||ST.heroStyle,whatsapp:ST.whatsapp,ig:ST.ig,fb:ST.fb,yt:ST.yt,li:ST.li,email:ST.email,phone:ST.phone,location:ST.location,address:ST.address,pageTitle:ST.pageTitle,meta:ST.meta,copyright:ST.copyright,heroShow:true,specShow:true,svcShow:true,aboutShow:true,faqShow:true,ctaShow:true,contactShow:true};
+  const nc=tpl.color||ST.color;
+  ST=Object.assign({},DEFAULTS,tpl.data,pres,{color:nc});
+  closeTemplates();fillForm();renderSpecList();renderSvcList();renderFaqList();
+  applyColor(nc);document.getElementById('hexInp').value=nc;document.getElementById('natClr').value=nc;syncSwatches(nc);renderHeroStyleCards();save();
+  document.getElementById('editor').scrollTo({top:0,behavior:'smooth'});goTo('sec-brand');
+}
+
+/* ════════════════════════════════
+   HELPERS
+════════════════════════════════ */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function lx(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return'#'+[r,g,b].map(v=>Math.round(v+(255-v)*a).toString(16).padStart(2,'0')).join('')}
+function dk(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return'#'+[r,g,b].map(v=>Math.round(v*(1-a)).toString(16).padStart(2,'0')).join('')}
+
+/* ════════════════════════════════
+   EXPORT HTML
+════════════════════════════════ */
+function buildExportHTML(){
+  readForm();ST.specialties=getSpecRows();ST.services=getSvcRows();ST.faqs=getFaqRows();
+  const c=ST.color||'#00c896',cl=lx(c,.9),cd=dk(c,.3),cm=lx(c,.55);
+  const style=ST.heroStyle||'dark-gradient';
+  const isLight=style==='light-clean'||style==='light-warm';
+  // Calculate optimal text color for accent background (WCAG luminance)
+  const _r=parseInt(c.slice(1,3),16)/255,_g=parseInt(c.slice(3,5),16)/255,_b=parseInt(c.slice(5,7),16)/255;
+  const _lum=0.2126*(_r<=0.03928?_r/12.92:Math.pow((_r+0.055)/1.055,2.4))+0.7152*(_g<=0.03928?_g/12.92:Math.pow((_g+0.055)/1.055,2.4))+0.0722*(_b<=0.03928?_b/12.92:Math.pow((_b+0.055)/1.055,2.4));
+  const cOnAccent=_lum>0.35?'#000':'#fff';
+  let heroBg,heroTxt,btnBg,btnClr,btn2Clr,btn2Bd;
+  if(style==='light-clean'){heroBg='background:#f8f9fb';heroTxt='#111';btnBg=c;btnClr=cOnAccent;btn2Clr=c;btn2Bd=c;}
+  else if(style==='light-warm'){heroBg='background:#faf6f1';heroTxt='#111';btnBg=c;btnClr=cOnAccent;btn2Clr=c;btn2Bd=c;}
+  else if(style==='dark-solid'){heroBg='background:#111';heroTxt='#f5f5f5';btnBg=c;btnClr=cOnAccent;btn2Clr='rgba(255,255,255,.8)';btn2Bd='rgba(255,255,255,.22)';}
+  else if(style==='accent-gradient'){heroBg='background:linear-gradient(135deg,'+c+','+cd+')';heroTxt='#fff';btnBg='#fff';btnClr='#111';btn2Clr='rgba(255,255,255,.9)';btn2Bd='rgba(255,255,255,.3)';}
+  else if(style==='accent-dark'){heroBg='background:linear-gradient(135deg,'+dk(c,.5)+','+dk(c,.72)+')';heroTxt='#fff';btnBg=c;btnClr=cOnAccent;btn2Clr='rgba(255,255,255,.8)';btn2Bd='rgba(255,255,255,.22)';}
+  else if(style==='midnight'){heroBg='background:linear-gradient(180deg,#070a12,#111827)';heroTxt='#f5f5f5';btnBg=c;btnClr=cOnAccent;btn2Clr='rgba(255,255,255,.8)';btn2Bd='rgba(255,255,255,.18)';}
+  else{heroBg='background:linear-gradient(160deg,#0e1117 0%,#171b24 60%,'+dk(c,.72)+' 100%)';heroTxt='#f5f5f5';btnBg=c;btnClr=cOnAccent;btn2Clr='rgba(255,255,255,.8)';btn2Bd='rgba(255,255,255,.22)';}
+
+  const specs=(ST.specialties||[]).filter(a=>a.title);
+  const svcs=(ST.services||[]).filter(s=>s.title);
+  const faqs=(ST.faqs||[]).filter(f=>f.q);
+  const waUrl=ST.whatsapp?buildWaLink(ST.whatsapp,''):'';
+  const resolveLink=l=>(!l||l==='#')?(waUrl||'#'):l;
+  const heroBtnHref=resolveLink(ST.heroBtnLink), ctaBtnHref=resolveLink(ST.ctaLink);
+  const socKeys=[waUrl&&'whatsapp',ST.ig&&'ig',ST.fb&&'fb',ST.yt&&'yt',ST.li&&'li'].filter(Boolean);
+  const SOC={whatsapp:{c:'#25D366',u:waUrl,p:'M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.123.555 4.116 1.528 5.845L.057 23.08a.75.75 0 00.923.924l5.357-1.483A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.73 9.73 0 01-4.966-1.357l-.356-.212-3.694 1.022 1.037-3.585-.232-.369A9.718 9.718 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z'},
+  ig:{c:'#E1306C',u:ST.ig,p:'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.668.072 4.948c.2 4.358 2.618 6.78 6.98 6.98 1.28.058 1.689.072 4.948.072s3.668-.014 4.948-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z'},
+  fb:{c:'#1877F2',u:ST.fb,p:'M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.269h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z'},
+  yt:{c:'#FF0000',u:ST.yt,p:'M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z'},
+  li:{c:'#0A66C2',u:ST.li,p:'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z'}};
+  const fsoc=k=>{const s=SOC[k];return '<a href="'+s.u+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:'+s.c+';text-decoration:none;transition:transform .2s"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff"><path d="'+s.p+'"/></svg></a>';};
+  const badges=(ST.heroBadges||'').split('·').map(b=>b.trim()).filter(Boolean);
+
+  const html=`<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${esc(ST.pageTitle||ST.brand)}</title><meta name="description" content="${esc(ST.meta)}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--c:${c};--cl:${cl};--cd:${cd};--ctext:${cOnAccent};--t:#111;--t2:#444;--t3:#777;--bg:#f6f7f9;--w:#fff;--bd:#eceef2;--r:16px;--mx:960px}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--t);background:var(--w);line-height:1.65;overflow-x:hidden}
+img{max-width:100%;display:block}
+/* anim */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+/* Mobile: animations play automatically on load — no JS needed */
+.rv{animation:fadeUp .7s cubic-bezier(.22,1,.36,1) both}
+.rv-sc{animation:scaleIn .7s cubic-bezier(.22,1,.36,1) both}
+.d1{animation-delay:.06s}.d2{animation-delay:.12s}.d3{animation-delay:.18s}.d4{animation-delay:.24s}
+/* Desktop (>800px): hide elements, reveal on scroll via JS */
+@media(min-width:801px){
+  .rv{animation:none;opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+  .rv-sc{animation:none;opacity:0;transform:scale(.96);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+  .rv.v,.rv-sc.v{opacity:1;transform:none}
+  .d1{transition-delay:.06s}.d2{transition-delay:.12s}.d3{transition-delay:.18s}.d4{transition-delay:.24s}
+}
+@media(prefers-reduced-motion:reduce){.rv,.rv-sc{animation:none!important;opacity:1!important;transform:none!important;transition:none!important}}
+
+/* ── NAV ── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 clamp(20px,4vw,48px);height:64px;display:flex;align-items:center;justify-content:space-between;transition:all .3s}
+.nav.sc{background:rgba(255,255,255,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--bd)}
+.nav-l{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.nav-logo{width:34px;height:34px;border-radius:8px;object-fit:contain}
+.nav-lp{width:34px;height:34px;border-radius:8px;background:var(--c);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:var(--ctext);flex-shrink:0}
+.nav-nm{font-weight:700;font-size:14px;letter-spacing:-.02em;color:${isLight?'var(--t)':'#fff'}}
+.nav.sc .nav-nm{color:var(--t)}
+.nav-r{display:flex;gap:28px;align-items:center}
+.nav-r a{font-size:13px;font-weight:500;text-decoration:none;color:${isLight?'var(--t3)':'rgba(255,255,255,.65)'};transition:color .2s}
+.nav-r a:hover{color:${isLight?'var(--c)':'#fff'}}
+.nav.sc .nav-r a{color:var(--t3)}.nav.sc .nav-r a:hover{color:var(--c)}
+.nav-btn{background:${isLight?'var(--t)':'rgba(255,255,255,.15)'};color:#fff;padding:9px 22px;border-radius:50px;font-size:13px;font-weight:700;text-decoration:none;transition:all .3s;${isLight?'':'border:1.5px solid rgba(255,255,255,.25)'}}
+.nav-btn:hover{opacity:.85;transform:translateY(-1px)}
+.nav.sc .nav-btn{background:var(--t);color:#fff;border:none;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.nav.sc .nav-btn:hover{opacity:.8;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.nav-bg{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:6px}
+.nav-bg span{display:block;width:22px;height:2px;background:${isLight?'var(--t)':'#fff'};border-radius:2px;transition:all .3s}
+.nav.sc .nav-bg span{background:var(--t)}
+.nav-bg.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-bg.open span:nth-child(2){opacity:0}.nav-bg.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-m{display:none;position:fixed;top:64px;left:0;right:0;background:var(--w);border-top:1px solid var(--bd);padding:16px 24px 24px;box-shadow:0 12px 32px rgba(0,0,0,.08);z-index:199;flex-direction:column;gap:4px;opacity:0;transform:translateY(-10px);transition:opacity .25s,transform .25s}
+.nav-m.open{display:flex;opacity:1;transform:translateY(0)}
+.nav-m a{font-size:15px;font-weight:600;color:var(--t);text-decoration:none;padding:10px 12px;border-radius:10px;transition:background .15s}.nav-m a:hover{background:var(--cl)}
+@media(max-width:800px){.nav-r{display:none}.nav-bg{display:flex}}
+@media(min-width:801px){.nav-m{display:none!important}}
+
+/* ── HERO: 2 columns, text left + image right ── */
+.hero{${heroBg};color:${heroTxt};min-height:100vh;display:flex;align-items:center;padding:clamp(80px,10vh,120px) clamp(24px,5vw,64px)}
+.hero-w{max-width:var(--mx);margin:0 auto;width:100%;display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(40px,5vw,64px);align-items:center}
+.hero-sub-tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${isLight?'var(--c)':heroTxt};opacity:${isLight?1:.6};margin-bottom:20px}
+.hero-sub-tag::before{content:'';width:24px;height:2px;background:var(--c);border-radius:1px}
+.hero-h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(32px,3.8vw,50px);font-weight:700;line-height:1.12;margin-bottom:22px;letter-spacing:-.02em}
+.hero-p{font-size:clamp(14.5px,1.3vw,16.5px);opacity:.72;line-height:1.8;margin-bottom:32px;max-width:460px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.hb{padding:13px 28px;border-radius:50px;font-size:14px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .25s;letter-spacing:-.01em}
+.hb-p{background:${btnBg};color:${btnClr};box-shadow:0 4px 16px rgba(0,0,0,.12)}.hb-p:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.16)}.hb-p:active{transform:translateY(0);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.hb-s{border:1.5px solid ${btn2Bd};color:${btn2Clr}}.hb-s:hover{opacity:.8}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.hero-bdg{font-size:11.5px;padding:5px 12px;border-radius:50px;background:${isLight?'rgba(0,0,0,.05)':'rgba(255,255,255,.1)'};color:${isLight?'var(--t2)':'rgba(255,255,255,.75)'};font-weight:500}
+.hero-img{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:3/4;max-height:440px;box-shadow:0 16px 48px rgba(0,0,0,.15)}
+.hero-img img{width:100%;height:100%;object-fit:cover}
+.hero-img-label{position:absolute;bottom:0;left:0;right:0;padding:18px 22px;background:linear-gradient(transparent,rgba(0,0,0,.5));color:#fff}
+.hero-img-label strong{display:block;font-size:14px;font-weight:700}.hero-img-label small{font-size:11.5px;opacity:.75}
+
+/* ── SECTIONS ── */
+.sec{padding:clamp(72px,9vw,110px) clamp(20px,4vw,48px)}
+.sec-w{max-width:var(--mx);margin:0 auto}
+.sec-hd{text-align:center;margin-bottom:clamp(40px,5vw,56px)}
+.sec-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c);margin-bottom:10px}
+.sec-tt{font-family:'Playfair Display',Georgia,serif;font-size:clamp(28px,3.4vw,42px);font-weight:700;line-height:1.15;margin-bottom:14px;letter-spacing:-.02em}
+.sec-sb{font-size:15px;color:var(--t3);max-width:520px;margin:0 auto;line-height:1.75}
+
+/* ── SPECIALTIES ── */
+.sp-sec{background:var(--w)}
+.sp-intro{font-size:15px;color:var(--t3);line-height:1.8;max-width:600px;margin:0 auto clamp(36px,4vw,48px);text-align:center}
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+.sp-card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:28px 24px;transition:all .3s cubic-bezier(.22,1,.36,1)}
+.sp-card:hover{transform:translateY(-5px);box-shadow:0 16px 48px rgba(0,0,0,.06);border-color:var(--c)}
+.sp-card:active{transform:translateY(-2px)}
+.sp-icon{font-size:30px;margin-bottom:14px;width:52px;height:52px;background:var(--cl);border-radius:14px;display:flex;align-items:center;justify-content:center}
+.sp-nm{font-size:16px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
+.sp-ds{font-size:13.5px;color:var(--t3);line-height:1.7}
+
+/* ── SERVICES ── */
+.sv-sec{background:var(--bg)}
+.sv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.sv-card{background:var(--w);border:1px solid var(--bd);border-radius:var(--r);padding:24px;display:flex;gap:16px;align-items:flex-start;transition:all .3s cubic-bezier(.22,1,.36,1)}
+.sv-card:hover{transform:translateY(-3px);box-shadow:0 10px 36px rgba(0,0,0,.05);border-color:var(--c)}
+.sv-card:active{transform:translateY(-1px)}
+.sv-icon{width:46px;height:46px;border-radius:12px;background:var(--cl);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.sv-nm{font-size:15px;font-weight:700;margin-bottom:4px;letter-spacing:-.01em}
+.sv-ds{font-size:13.5px;color:var(--t3);line-height:1.7}
+
+/* ── ABOUT ── */
+.ab-sec{background:var(--w)}
+.ab-grid{display:grid;grid-template-columns:5fr 6fr;gap:clamp(36px,5vw,64px);align-items:center}
+.ab-img{border-radius:20px;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,.08)}
+.ab-img img{width:100%;height:clamp(360px,40vw,480px);object-fit:cover}
+.ab-tt{font-family:'Playfair Display',Georgia,serif;font-size:clamp(26px,3vw,36px);font-weight:700;margin-bottom:20px;letter-spacing:-.02em;line-height:1.15}
+.ab-p{font-size:14.5px;color:var(--t2);line-height:1.85;margin-bottom:14px}
+.ab-stats{display:flex;gap:0;margin-top:28px;border-top:1px solid var(--bd);padding-top:24px}
+.ab-stat{flex:1;text-align:center;padding:0 12px;border-right:1px solid var(--bd)}.ab-stat:last-child{border-right:none}
+.ab-stat-n{font-family:'Playfair Display',serif;font-size:clamp(24px,2.8vw,34px);font-weight:700;color:var(--c);line-height:1;margin-bottom:4px}
+.ab-stat-l{font-size:12px;color:var(--t3)}
+
+/* ── FAQ ── */
+.fq-sec{background:var(--bg)}
+.fq-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.fq-item{background:var(--w);border-radius:14px;border:1px solid var(--bd);overflow:hidden;transition:border-color .3s}
+.fq-item:hover{border-color:var(--cl)}
+.fq-q{width:100%;text-align:left;background:none;border:none;padding:20px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;color:var(--t);line-height:1.4;transition:background .2s}
+.fq-q:hover{background:var(--bg)}
+.fq-arr{width:24px;height:24px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:var(--t3);transition:all .3s}
+.fq-item.open .fq-arr{background:var(--c);color:var(--ctext);transform:rotate(180deg)}
+.fq-a{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .4s ease;font-size:14.5px;color:var(--t2);line-height:1.85;padding:0 24px}
+.fq-item.open .fq-a{max-height:500px;padding:0 24px 22px}
+
+/* ── CTA ── */
+.cta{${heroBg};color:${heroTxt};padding:clamp(72px,9vw,110px) clamp(20px,4vw,48px);text-align:center}
+.cta-w{max-width:600px;margin:0 auto}
+.cta-tt{font-family:'Playfair Display',Georgia,serif;font-size:clamp(28px,3.8vw,46px);font-weight:700;margin-bottom:18px;line-height:1.12;letter-spacing:-.02em}
+.cta-p{font-size:16px;opacity:.75;margin-bottom:36px;line-height:1.8}
+.cta-btn{display:inline-flex;align-items:center;gap:9px;background:${btnBg};color:${btnClr};padding:16px 40px;border-radius:50px;font-size:16px;font-weight:700;text-decoration:none;box-shadow:0 6px 24px rgba(0,0,0,.12);transition:all .25s}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,0,0,.18)}.cta-btn:active{transform:translateY(0)}
+.cta-nt{margin-top:18px;font-size:13px;opacity:.5}
+
+/* ── FOOTER ── */
+.ft{background:#111;color:rgba(255,255,255,.5);padding:clamp(48px,6vw,72px) clamp(20px,4vw,48px)}
+.ft-w{max-width:var(--mx);margin:0 auto}
+.ft-top{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:40px;padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,.08)}
+.ft-nm{font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:4px}.ft-crp{font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+.ft-desc{font-size:13px;line-height:1.7;max-width:280px}
+.ft-soc{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.ft-col-t{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:16px}
+.ft-ci{font-size:13px;margin-bottom:10px;line-height:1.55}.ft-ci-i{margin-right:6px;opacity:.5}
+.ft-nav a{display:block;font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;margin-bottom:10px;transition:color .2s}.ft-nav a:hover{color:var(--c)}
+.ft-bot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:24px;font-size:11px;color:rgba(255,255,255,.2)}
+
+/* ── WA FLOAT ── */
+${waUrl?`.waf{position:fixed;bottom:24px;right:24px;z-index:300;width:56px;height:56px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.35);text-decoration:none;transition:all .25s}.waf:hover{transform:scale(1.08);box-shadow:0 8px 28px rgba(37,211,102,.5)}.waf svg{width:28px;height:28px;fill:#fff}`:''}
+
+/* ══════════════════════════════════
+   RESPONSIVE — TABLET (≤800px)
+══════════════════════════════════ */
+@media(max-width:800px){
+  /* HERO */
+  .hero{min-height:auto;padding:88px 20px 48px}
+  .hero-w{grid-template-columns:1fr;gap:0}
+  .hero-img{order:-1;max-height:280px;aspect-ratio:16/9;border-radius:14px;margin-bottom:32px}
+  .hero-img-label{padding:14px 18px}
+  .hero-img-label strong{font-size:13px}
+  .hero-sub-tag{margin-bottom:16px}
+  .hero-h1{font-size:30px;margin-bottom:16px}
+  .hero-p{font-size:15px;margin-bottom:24px;max-width:100%}
+  .hero-btns{gap:10px;margin-bottom:20px}
+  .hb{padding:12px 24px;font-size:13.5px}
+  .hero-badges{gap:8px}
+  .hero-bdg{font-size:11px;padding:4px 10px}
+  /* SECTIONS */
+  .sec{padding:56px 20px}
+  .sec-hd{margin-bottom:32px}
+  .sec-tt{font-size:26px}
+  .sec-sb{font-size:14px}
+  .sp-intro{font-size:14px;margin-bottom:28px}
+  /* SPECIALTIES */
+  .sp-grid{grid-template-columns:1fr 1fr;gap:14px}
+  .sp-card{padding:22px 20px}
+  .sp-icon{width:44px;height:44px;font-size:24px;border-radius:12px;margin-bottom:12px}
+  .sp-nm{font-size:15px}
+  .sp-ds{font-size:13px}
+  /* SERVICES */
+  .sv-grid{grid-template-columns:1fr}
+  .sv-card{padding:20px}
+  .sv-icon{width:42px;height:42px;font-size:20px;border-radius:10px}
+  .sv-nm{font-size:14.5px}
+  .sv-ds{font-size:13px}
+  /* ABOUT */
+  .ab-grid{grid-template-columns:1fr;gap:28px}
+  .ab-img{order:-1;border-radius:16px}
+  .ab-img img{height:260px}
+  .ab-tt{font-size:26px;margin-bottom:16px}
+  .ab-p{font-size:14px;margin-bottom:12px}
+  .ab-stats{margin-top:24px;padding-top:20px}
+  .ab-stat{padding:0 8px}
+  .ab-stat-n{font-size:22px}
+  .ab-stat-l{font-size:11px}
+  /* FAQ */
+  .fq-q{padding:16px 20px;font-size:14px}
+  .fq-item.open .fq-a{padding:0 20px 18px}
+  .fq-a{font-size:13.5px;padding:0 20px}
+  /* CTA */
+  .cta{padding:56px 20px}
+  .cta-tt{font-size:26px}
+  .cta-p{font-size:14.5px;margin-bottom:28px}
+  .cta-btn{padding:14px 32px;font-size:15px}
+  .cta-nt{font-size:12px}
+  /* FOOTER */
+  .ft{padding:40px 20px}
+  .ft-top{grid-template-columns:1fr;gap:28px}
+  .ft-nm{font-size:18px}
+  .ft-desc{max-width:100%}
+  .ft-bot{padding-top:20px}
+}
+
+/* ══════════════════════════════════
+   RESPONSIVE — MOBILE (≤480px)
+══════════════════════════════════ */
+@media(max-width:480px){
+  /* HERO */
+  .hero{padding:80px 16px 40px}
+  .hero-img{max-height:220px;border-radius:12px;margin-bottom:24px}
+  .hero-img-label{display:none}
+  .hero-sub-tag{font-size:10px;margin-bottom:14px}
+  .hero-h1{font-size:26px;margin-bottom:14px;line-height:1.18}
+  .hero-p{font-size:14px;line-height:1.75;margin-bottom:20px}
+  .hero-btns{flex-direction:column;align-items:stretch;gap:10px}
+  .hb{justify-content:center;padding:13px 20px;font-size:13.5px}
+  .hero-badges{justify-content:center;gap:6px}
+  .hero-bdg{font-size:10.5px;padding:4px 9px}
+  /* SECTIONS */
+  .sec{padding:44px 16px}
+  .sec-hd{margin-bottom:24px}
+  .sec-tt{font-size:23px}
+  .sec-sb,.sp-intro{font-size:13.5px}
+  /* SPECIALTIES */
+  .sp-grid{grid-template-columns:1fr;gap:12px}
+  .sp-card{padding:20px 18px}
+  .sp-icon{width:40px;height:40px;font-size:22px;margin-bottom:10px}
+  .sp-nm{font-size:14.5px}
+  .sp-ds{font-size:12.5px}
+  /* SERVICES */
+  .sv-card{padding:18px 16px;gap:12px}
+  .sv-icon{width:40px;height:40px;font-size:19px}
+  .sv-nm{font-size:14px}
+  .sv-ds{font-size:12.5px}
+  /* ABOUT */
+  .ab-img img{height:220px;border-radius:14px}
+  .ab-tt{font-size:23px}
+  .ab-p{font-size:13.5px}
+  .ab-stats{flex-direction:column;gap:0}
+  .ab-stat{padding:12px 0;border-right:none;border-bottom:1px solid var(--bd);text-align:left;display:flex;align-items:baseline;gap:10px}
+  .ab-stat:last-child{border-bottom:none}
+  .ab-stat-n{font-size:20px;min-width:60px}
+  .ab-stat-l{font-size:12px}
+  /* FAQ */
+  .fq-q{padding:15px 16px;font-size:13.5px;gap:10px}
+  .fq-arr{width:22px;height:22px;font-size:9px}
+  .fq-a{font-size:13px;padding:0 16px}
+  .fq-item.open .fq-a{padding:0 16px 16px}
+  /* CTA */
+  .cta{padding:48px 16px}
+  .cta-tt{font-size:23px;margin-bottom:14px}
+  .cta-p{font-size:14px;margin-bottom:24px;line-height:1.7}
+  .cta-btn{padding:14px 28px;font-size:14px;width:100%;justify-content:center}
+  .cta-nt{font-size:11.5px;margin-top:14px}
+  /* FOOTER */
+  .ft{padding:36px 16px}
+  .ft-top{gap:24px;padding-bottom:28px}
+  .ft-nm{font-size:17px}
+  .ft-ci,.ft-nav a{font-size:12.5px}
+  .ft-bot{font-size:10.5px}
+}
+</style></head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <a href="#" class="nav-l">${ST.logo?'<img class="nav-logo" src="'+ST.logo+'" alt="">':'<div class="nav-lp">'+esc(ST.brand.charAt(0))+'</div>'}<span class="nav-nm">${esc(ST.brand)}</span></a>
+  <div class="nav-r">${ST.specShow?'<a href="#especialidades">Especialidades</a>':''}${ST.svcShow?'<a href="#atendimentos">Atendimentos</a>':''}${ST.aboutShow?'<a href="#sobre">Sobre</a>':''}${ST.faqShow?'<a href="#faq">FAQ</a>':''}<a href="${heroBtnHref}" class="nav-btn">${esc(ST.heroBtn||'Agendar')}</a></div>
+  <button class="nav-bg" id="burger" onclick="this.classList.toggle('open');document.getElementById('navM').classList.toggle('open')"><span></span><span></span><span></span></button>
+</nav>
+<div class="nav-m" id="navM">${ST.specShow?'<a href="#especialidades" onclick="closeM()">Especialidades</a>':''}${ST.svcShow?'<a href="#atendimentos" onclick="closeM()">Atendimentos</a>':''}${ST.aboutShow?'<a href="#sobre" onclick="closeM()">Sobre</a>':''}${ST.faqShow?'<a href="#faq" onclick="closeM()">FAQ</a>':''}<a href="${heroBtnHref}" onclick="closeM()" style="margin-top:8px;background:var(--t);color:#fff;text-align:center;border-radius:50px;padding:12px;font-weight:700">${esc(ST.heroBtn||'Agendar')}</a></div>
+
+${ST.heroShow?`<!-- HERO -->
+<section class="hero">
+  <div class="hero-w">
+    <div>
+      <div class="hero-sub-tag rv">Fisioterapeuta</div>
+      <h1 class="hero-h1 rv d1">${esc(ST.heroTitle)}</h1>
+      <p class="hero-p rv d2">${esc(ST.heroSub)}</p>
+      <div class="hero-btns rv d3">
+        <a href="${heroBtnHref}" class="hb hb-p">${esc(ST.heroBtn)}</a>
+        ${ST.heroBtn2?'<a href="'+(ST.heroBtn2Link||'#')+'" class="hb hb-s">'+esc(ST.heroBtn2)+'</a>':''}
+      </div>
+      ${badges.length?'<div class="hero-badges rv d4">'+badges.map(b=>'<span class="hero-bdg">'+esc(b)+'</span>').join('')+'</div>':''}
+    </div>
+    ${ST.photo?'<div class="hero-img rv-sc d3"><img src="'+ST.photo+'" alt="'+esc(ST.brand)+'"><div class="hero-img-label"><strong>'+esc(ST.brand)+'</strong><small>'+esc(ST.specialty)+'</small></div></div>':''}
+  </div>
+</section>`:''}
+
+${ST.specShow&&specs.length?`<!-- ESPECIALIDADES -->
+<section class="sec sp-sec" id="especialidades">
+  <div class="sec-w">
+    <div class="sec-hd rv"><div class="sec-tag">Especialidades</div><h2 class="sec-tt">${esc(ST.specTitle)}</h2></div>
+    ${ST.specIntro?'<p class="sp-intro rv">'+esc(ST.specIntro)+'</p>':''}
+    <div class="sp-grid">${specs.map((s,i)=>'<div class="sp-card rv d'+Math.min(i%3+1,3)+'"><div class="sp-icon">'+s.icon+'</div><div class="sp-nm">'+esc(s.title)+'</div><div class="sp-ds">'+esc(s.desc)+'</div></div>').join('')}</div>
+  </div>
+</section>`:''}
+
+${ST.svcShow&&svcs.length?`<!-- ATENDIMENTOS -->
+<section class="sec sv-sec" id="atendimentos">
+  <div class="sec-w">
+    <div class="sec-hd rv"><div class="sec-tag">Atendimentos</div><h2 class="sec-tt">${esc(ST.svcTitle)}</h2>${ST.svcSub?'<p class="sec-sb">'+esc(ST.svcSub)+'</p>':''}</div>
+    <div class="sv-grid">${svcs.map((s,i)=>'<div class="sv-card rv d'+(i%2+1)+'"><div class="sv-icon">'+s.icon+'</div><div><div class="sv-nm">'+esc(s.title)+'</div><div class="sv-ds">'+esc(s.desc)+'</div></div></div>').join('')}</div>
+  </div>
+</section>`:''}
+
+${ST.aboutShow?`<!-- SOBRE -->
+<section class="sec ab-sec" id="sobre">
+  <div class="sec-w">
+    <div class="ab-grid">
+      ${ST.aboutPhoto?'<div class="ab-img rv-sc"><img src="'+ST.aboutPhoto+'" alt=""></div>':''}
+      <div>
+        <div class="sec-tag rv">Sobre mim</div>
+        <h2 class="ab-tt rv d1">${esc(ST.aboutTitle)}</h2>
+        <p class="ab-p rv d2">${esc(ST.aboutText)}</p>
+        ${ST.aboutText2?'<p class="ab-p rv d3">'+esc(ST.aboutText2)+'</p>':''}
+        ${(ST.stat1Num||ST.stat2Num||ST.stat3Num)?'<div class="ab-stats rv d4">'+(ST.stat1Num?'<div class="ab-stat"><div class="ab-stat-n">'+esc(ST.stat1Num)+'</div><div class="ab-stat-l">'+esc(ST.stat1Lbl)+'</div></div>':'')+(ST.stat2Num?'<div class="ab-stat"><div class="ab-stat-n">'+esc(ST.stat2Num)+'</div><div class="ab-stat-l">'+esc(ST.stat2Lbl)+'</div></div>':'')+(ST.stat3Num?'<div class="ab-stat"><div class="ab-stat-n">'+esc(ST.stat3Num)+'</div><div class="ab-stat-l">'+esc(ST.stat3Lbl)+'</div></div>':'')+'</div>':''}
+      </div>
+    </div>
+  </div>
+</section>`:''}
+
+${ST.faqShow&&faqs.length?`<!-- FAQ -->
+<section class="sec fq-sec" id="faq">
+  <div class="sec-w">
+    <div class="sec-hd rv"><div class="sec-tag">Dúvidas</div><h2 class="sec-tt">${esc(ST.faqTitle)}</h2></div>
+    <div class="fq-list rv">${faqs.map((f,i)=>'<div class="fq-item'+(i===0?' open':'')+'" id="faq'+i+'"><button class="fq-q" onclick="tgFaq('+i+')"><span>'+esc(f.q)+'</span><span class="fq-arr">&#9660;</span></button><div class="fq-a">'+esc(f.a)+'</div></div>').join('')}</div>
+  </div>
+</section>`:''}
+
+${ST.ctaShow?`<!-- CTA -->
+<section class="cta" id="agendamento">
+  <div class="cta-w">
+    <h2 class="cta-tt rv">${esc(ST.ctaTitle)}</h2>
+    <p class="cta-p rv d1">${esc(ST.ctaSub)}</p>
+    <a href="${ctaBtnHref}" class="cta-btn rv d2">${esc(ST.ctaBtn)}</a>
+    ${ST.ctaNote?'<p class="cta-nt rv d3">'+esc(ST.ctaNote)+'</p>':''}
+  </div>
+</section>`:''}
+
+${ST.contactShow?`<!-- FOOTER -->
+<footer class="ft">
+  <div class="ft-w">
+    <div class="ft-top">
+      <div>
+        <div class="ft-nm">${esc(ST.brand)}</div>
+        <div class="ft-crp">${esc(ST.crefito)}</div>
+        <div class="ft-desc">${esc(ST.specialty)}</div>
+        ${socKeys.length?'<div class="ft-soc">'+socKeys.map(k=>fsoc(k)).join('')+'</div>':''}
+      </div>
+      <div>
+        <div class="ft-col-t">Contato</div>
+        ${ST.email?'<div class="ft-ci"><span class="ft-ci-i">✉</span>'+esc(ST.email)+'</div>':''}
+        ${ST.phone?'<div class="ft-ci"><span class="ft-ci-i">📞</span>'+esc(ST.phone)+'</div>':''}
+        ${ST.location?'<div class="ft-ci"><span class="ft-ci-i">📍</span>'+esc(ST.location)+(ST.address?' — '+esc(ST.address):'')+'</div>':''}
+      </div>
+      <div class="ft-nav">
+        <div class="ft-col-t">Navegação</div>
+        ${ST.specShow?'<a href="#especialidades">Especialidades</a>':''}
+        ${ST.svcShow?'<a href="#atendimentos">Atendimentos</a>':''}
+        ${ST.aboutShow?'<a href="#sobre">Sobre</a>':''}
+        ${ST.faqShow?'<a href="#faq">FAQ</a>':''}
+        <a href="${heroBtnHref}">Agendar</a>
+      </div>
+    </div>
+    <div class="ft-bot"><span>${esc(ST.copyright)||'© '+new Date().getFullYear()+' '+esc(ST.brand)+'. Todos os direitos reservados.'}</span></div>
+  </div>
+</footer>`:''}
+
+${waUrl?'<a href="'+waUrl+'" class="waf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.555 4.116 1.528 5.845L.057 23.08a.75.75 0 00.923.924l5.357-1.483A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.73 9.73 0 01-4.966-1.357l-.356-.212-3.694 1.022 1.037-3.585-.232-.369A9.718 9.718 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg></a>':''}
+
+<script>
+function tgFaq(i){var t=document.getElementById('faq'+i),o=t.classList.contains('open');document.querySelectorAll('.fq-item.open').forEach(function(e){e.classList.remove('open')});if(!o)t.classList.add('open')}
+function closeM(){document.getElementById('burger').classList.remove('open');document.getElementById('navM').classList.remove('open')}
+document.addEventListener('click',function(e){var n=document.querySelector('.nav'),m=document.getElementById('navM');if(n&&m&&!n.contains(e.target)&&!m.contains(e.target))closeM()});
+/* Scroll reveal — desktop only (>800px) */
+if(window.innerWidth>800&&'IntersectionObserver' in window){
+  var obs=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:0.05});
+  document.querySelectorAll('.rv,.rv-sc').forEach(function(el){obs.observe(el)});
+  /* Hero: reveal immediately with stagger */
+  document.querySelectorAll('.hero .rv,.hero .rv-sc').forEach(function(el,i){
+    setTimeout(function(){el.classList.add('v')},100+i*80);
+  });
+}
+/* Nav scroll shadow */
+var tk=false;window.addEventListener('scroll',function(){if(!tk){window.requestAnimationFrame(function(){var n=document.querySelector('.nav');if(n)n.classList.toggle('sc',window.scrollY>30);tk=false});tk=true}});
+<\/script>
+</body></html>`;
+  return html;
+}
+
+
+function exportHTML(){
+  readForm();ST.specialties=getSpecRows();ST.services=getSvcRows();ST.faqs=getFaqRows();
+  try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}
+  const html=buildExportHTML();
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;
+  a.download=(ST.brand||'landing-page').replace(/[^a-zA-Z0-9À-ú ]/g,'').trim().replace(/\s+/g,'-').toLowerCase()+'.html';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+
+/* ════════════════════════════════
+   EXPORT / IMPORT JSON
+════════════════════════════════ */
+function exportJSON(){
+  readForm();ST.specialties=getSpecRows();ST.services=getSvcRows();ST.faqs=getFaqRows();
+  const data={version:1,exportedAt:new Date().toISOString(),editorKey:KEY,state:ST};
+  const json=JSON.stringify(data,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;
+  const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+  a.download='fisio-backup-'+ts+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
+  setStatus('saved');setTimeout(()=>setStatus('idle'),2000);
+}
+
+function importJSON(){
+  document.getElementById('jsonFileInput').click();
+}
+
+function handleImportJSON(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const data=JSON.parse(ev.target.result);
+      const state=data.state||data;
+      if(!state.brand&&!state.heroTitle){
+        alert('Arquivo inválido. O JSON não contém dados do editor.');
+        return;
+      }
+      const exportDate=data.exportedAt?'\nExportado em: '+new Date(data.exportedAt).toLocaleString():'';
+      if(!confirm('Importar backup?'+exportDate+'\n\nIsso substituirá todos os dados atuais (textos, fotos, cores, tudo).\n\nDeseja continuar?'))return;
+      pushHistory();syncUndoButtons();
+      ST=Object.assign({},DEFAULTS,state);
+      fillForm();renderSpecList();renderSvcList();renderFaqList();applyColor(ST.color);renderHeroStyleCards();
+      try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}
+      setStatus('saved');setTimeout(()=>{setStatus('idle');renderPreview();},200);
+      document.getElementById('editor').scrollTo({top:0,behavior:'smooth'});
+      goTo('sec-brand');
+    }catch(err){
+      alert('Erro ao ler o arquivo JSON.\n\n'+err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+function resetEditor(){
+  if(!confirm('Restaurar todos os dados para o padrão?\n\nIsso apagará todas as alterações, incluindo textos, fotos e cores.\n\nEssa ação pode ser desfeita com Ctrl+Z.'))return;
+  pushHistory();syncUndoButtons();
+  ST={...DEFAULTS};
+  fillForm();renderSpecList();renderSvcList();renderFaqList();applyColor(ST.color);renderHeroStyleCards();
+  try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}
+  setStatus('saved');setTimeout(()=>{setStatus('idle');renderPreview();},200);
+  document.getElementById('editor').scrollTo({top:0,behavior:'smooth'});
+  goTo('sec-brand');
+}
+
+/* ════════════════════════════════
+   EVENT BINDINGS
+════════════════════════════════ */
+(function bindAll(){
+  document.getElementById('btnUndo').addEventListener('click',undo);
+  document.getElementById('btnRedo').addEventListener('click',redo);
+  document.getElementById('btnTemplates').addEventListener('click',openTemplates);
+  document.getElementById('btnPreview').addEventListener('click',openPreview);
+  document.getElementById('btnExport').addEventListener('click',exportHTML);
+  document.getElementById('btnExportJson').addEventListener('click',exportJSON);
+  document.getElementById('btnImportJson').addEventListener('click',importJSON);
+  document.getElementById('btnReset').addEventListener('click',resetEditor);
+  document.getElementById('jsonFileInput').addEventListener('change',handleImportJSON);
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.shiftKey){e.preventDefault();undo();}
+    if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.key==='z'&&e.shiftKey))){e.preventDefault();redo();}
+  });
+  document.getElementById('tplModal').addEventListener('click',e=>{if(e.target===document.getElementById('tplModal'))closeTemplates();});
+  document.getElementById('tplClose').addEventListener('click',closeTemplates);
+  document.getElementById('pvModal').addEventListener('click',e=>{if(e.target===document.getElementById('pvModal'))closePreview();});
+  document.getElementById('pvClose').addEventListener('click',closePreview);
+  document.getElementById('pvBtnDesk').addEventListener('click',()=>setPreviewDevice('desk'));
+  document.getElementById('pvBtnMob').addEventListener('click',()=>setPreviewDevice('mob'));
+  document.getElementById('editor').addEventListener('scroll',function(){
+    const secs=['sec-brand','sec-hero','sec-specialties','sec-services','sec-about','sec-faq','sec-cta','sec-contact','sec-colors','sec-seo'];
+    let cur=secs[0];
+    secs.forEach(id=>{const el=document.getElementById(id);if(el&&el.offsetTop-this.scrollTop<120)cur=id;});
+    document.querySelectorAll('[data-sec]').forEach(n=>n.classList.toggle('active',n.dataset.sec===cur));
+  });
+})();
+</script>
+</body>
+</html>
